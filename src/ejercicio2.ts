@@ -18,3 +18,21 @@
 // Retiro: $4000
 // Envío: $5500
 // ```
+class ConfiguracionLocal {
+  private static instancia: ConfiguracionLocal;
+  readonly costoEnvio = 1500;
+
+  private constructor() {}
+
+  // devuelvo siempre la misma instancia
+  static obtenerInstancia(): ConfiguracionLocal {
+    if (!ConfiguracionLocal.instancia) {
+      ConfiguracionLocal.instancia = new ConfiguracionLocal();
+    }
+    return ConfiguracionLocal.instancia;
+  }
+}
+
+const primera = ConfiguracionLocal.obtenerInstancia();
+const segunda = ConfiguracionLocal.obtenerInstancia();
+console.log(`Mismo Singleton: ${primera === segunda}`);
