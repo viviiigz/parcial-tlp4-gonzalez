@@ -18,6 +18,22 @@
 // Retiro: $4000
 // Envío: $5500
 // ```
+
+interface Pedido {
+  calcularTotal(subtotal: number): number;
+}
+class PedidoRetiro implements Pedido {
+  calcularTotal(subtotal: number): number {
+    return subtotal;
+  }
+}
+class PedidoEnvio implements Pedido {
+  calcularTotal(subtotal: number): number {
+    const costoEnvio = ConfiguracionLocal.obtenerInstancia().costoEnvio;
+    return subtotal + costoEnvio;
+  }
+}
+
 class ConfiguracionLocal {
   private static instancia: ConfiguracionLocal;
   readonly costoEnvio = 1500;
@@ -32,6 +48,7 @@ class ConfiguracionLocal {
     return ConfiguracionLocal.instancia;
   }
 }
+
 
 const primera = ConfiguracionLocal.obtenerInstancia();
 const segunda = ConfiguracionLocal.obtenerInstancia();
