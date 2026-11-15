@@ -1,0 +1,2615 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TLP IV Recuperatorio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: cuaderno de estudio — barra fija de unidad + modo arriba, una columna de trabajo centrada debajo */
+:root{
+  --bg:#f3f4f8; --surface:#ffffff; --sunken:#e9ebf2; --fg:#161a2b; --muted:#5a6079; --line:#d9dce7;
+  --accent:#3438d0; --accent-ink:#ffffff; --accent-soft:#e6e7fb;
+  --ok:#17804f; --ok-soft:#dcf2e6; --bad:#c0352b; --bad-soft:#fbe3e0;
+  --u-poo:#7646c8; --u-pat:#0f7ea0; --u-solid:#b8561a; --u-exam:#17804f;
+  --term-bg:#151827; --term-fg:#c8f0d8;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f111a; --surface:#171a27; --sunken:#1f2333; --fg:#e7e9f3; --muted:#9aa0b9; --line:#2b3046;
+  --accent:#8f93ff; --accent-ink:#0f111a; --accent-soft:#25285a;
+  --ok:#4fcf8d; --ok-soft:#163626; --bad:#ff7b6f; --bad-soft:#3d1a18;
+  --u-poo:#b393f2; --u-pat:#5cc4e6; --u-solid:#f2a066; --u-exam:#4fcf8d;
+  --term-bg:#0a0c13; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f111a; --surface:#171a27; --sunken:#1f2333; --fg:#e7e9f3; --muted:#9aa0b9; --line:#2b3046;
+  --accent:#8f93ff; --accent-ink:#0f111a; --accent-soft:#25285a;
+  --ok:#4fcf8d; --ok-soft:#163626; --bad:#ff7b6f; --bad-soft:#3d1a18;
+  --u-poo:#b393f2; --u-pat:#5cc4e6; --u-solid:#f2a066; --u-exam:#4fcf8d;
+  --term-bg:#0a0c13; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code{font-family:var(--mono);font-size:.88em;background:var(--sunken);padding:.1em .35em;border-radius:4px}
+
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding-block:18px 10px;border-bottom:1px solid var(--line);margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.top-in{max-width:860px;margin:0 auto;display:grid;gap:12px}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand h1{font-size:clamp(1.5rem,4vw,2rem);font-weight:800;letter-spacing:-.02em}
+.brand .meta{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.88rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chip[aria-pressed="true"]{border-color:var(--c,var(--fg));box-shadow:inset 0 0 0 1px var(--c,var(--fg));font-weight:700}
+.tabs{display:flex;gap:2px;background:var(--sunken);padding:3px;border-radius:9px;width:fit-content;max-width:100%;overflow-x:auto}
+.tab{border:0;background:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.92rem;color:var(--muted);white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgb(0 0 0 / .08)}
+
+main{padding-top:24px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:var(--fg)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.btn.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.btn.sm{padding:5px 10px;font-size:.8rem}
+.ubadge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.ubadge::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c)}
+.srcbadge{font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+
+/* aviso */
+.notice{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--u-exam);border-radius:var(--r);padding:14px 16px;margin-bottom:26px;display:grid;gap:6px}
+.notice p{margin:0}
+.notice ol{margin:0;padding-left:1.2em}
+
+/* resumen */
+.unit-block{display:grid;gap:14px;margin-bottom:40px}
+.unit-head{display:grid;gap:4px;padding-bottom:10px;border-bottom:2px solid var(--c)}
+.unit-head h2{font-size:1.6rem;font-weight:800}
+.unit-head p{margin:0;color:var(--muted)}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);scroll-margin-top:200px}
+details.sec summary{cursor:pointer;padding:12px 16px;font-family:var(--display);font-weight:700;font-size:1.08rem;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary::after{content:"+";font-family:var(--mono);color:var(--muted)}
+details.sec[open] summary::after{content:"−"}
+.sec-body{padding:0 16px 14px}
+.sum-tools{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sum-tools input{flex:1;min-width:200px;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+.toc{display:flex;flex-wrap:wrap;gap:6px}
+.toc a{font-size:.85rem;color:var(--fg);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:4px 10px}
+.toc a:hover{border-color:var(--c)}
+.prose{max-width:74ch;display:grid;gap:10px}
+.prose p,.prose ul,.prose ol{margin:0}
+.prose ul,.prose ol{padding-left:1.25em;display:grid;gap:6px}
+.prose h4{font-family:var(--display);font-size:1rem;margin:8px 0 0;color:var(--c)}
+.prose .ex{padding:10px 14px;border-radius:8px;border:1px dashed var(--line);font-size:.95rem}
+.prose .note{padding:9px 12px;border-radius:8px;background:var(--sunken);font-size:.93rem}
+.prose .warn{padding:9px 12px;border-radius:8px;background:var(--bad-soft);font-size:.93rem}
+.prose .ex b:first-child,.prose .note b:first-child,.prose .warn b:first-child{display:block;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.prose .note b:first-child{color:var(--c)}
+.prose .warn b:first-child{color:var(--bad)}
+.prose .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.prose .cols>div{min-width:0;display:grid;gap:6px;align-content:start}
+.mini{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.mini table{min-width:420px}
+
+/* código */
+pre.code{margin:0;overflow-x:auto;background:var(--sunken);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.82rem;line-height:1.55;tab-size:2;position:relative}
+pre.code .tk-k{color:var(--accent);font-weight:600}
+pre.code .tk-s{color:var(--ok)}
+pre.code .tk-c{color:var(--muted);font-style:italic}
+pre.code .tk-n{color:var(--u-solid)}
+.code-wrap{position:relative;min-width:0}
+.code-wrap .copy{position:absolute;top:6px;right:6px;opacity:.85}
+pre.out{margin:0;overflow-x:auto;background:var(--term-bg);color:var(--term-fg);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.84rem;line-height:1.55}
+
+/* flashcards */
+.fc-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.progress{height:6px;border-radius:99px;background:var(--sunken);overflow:hidden;flex:1;min-width:120px}
+.progress i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.stats{font-family:var(--mono);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.card{perspective:1400px;cursor:pointer;margin-bottom:16px}
+.card-in{display:grid;transition:transform .45s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.card.flipped .card-in{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 24px;min-height:260px;display:flex;flex-direction:column;gap:14px}
+.face.back{transform:rotateY(180deg)}
+.face .q{font-family:var(--display);font-size:clamp(1.25rem,3.4vw,1.65rem);font-weight:700;line-height:1.25;margin:auto 0;text-wrap:balance}
+.face .a{font-size:1.04rem;margin:auto 0;max-width:62ch}
+.face .hint{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.05em}
+.face .top-line{display:flex;justify-content:space-between;gap:8px}
+.known-mark{font-family:var(--mono);font-size:.7rem;color:var(--ok)}
+.fc-actions{display:grid;grid-template-columns:auto 1fr 1fr auto;gap:8px}
+.fc-actions .btn{padding:12px}
+.kbd{font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-top:10px;text-align:center}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:32px;text-align:center;display:grid;gap:12px;justify-items:center}
+
+/* quiz */
+.qz-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:16px}
+.qz-q{font-family:var(--display);font-size:clamp(1.15rem,3vw,1.4rem);font-weight:700;line-height:1.3}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:flex-start}
+.opt .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);padding-top:2px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.expl{border-left:3px solid var(--c,var(--accent));padding:8px 12px;background:var(--sunken);border-radius:0 8px 8px 0;font-size:.95rem}
+.qz-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.score-big{font-family:var(--display);font-size:3.4rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.miss{display:grid;gap:10px;margin-top:6px}
+.miss div{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:.94rem}
+.miss b{display:block}
+.qz-setup{display:grid;gap:14px}
+.qz-setup h3{font-size:1.05rem}
+.hist{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+
+/* tablas */
+.tbl-block{margin-bottom:30px;display:grid;gap:8px}
+.tbl-block h3{font-size:1.15rem}
+.tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:520px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--sunken)}
+tr:last-child td{border-bottom:0}
+td.okc{color:var(--ok);font-weight:700}
+td.badc{color:var(--bad);font-weight:700}
+
+/* práctica */
+.pr-bar{display:grid;gap:12px;margin-bottom:20px}
+.timer-box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.timer{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.6rem;font-weight:600}
+.timer.late{color:var(--bad)}
+.ex-card{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:14px;padding:20px;display:grid;gap:14px;margin-bottom:22px;scroll-margin-top:200px}
+.ex-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.ex-card h3{font-size:1.35rem}
+.ex-card .temas{color:var(--muted);font-size:.92rem;margin:0}
+.ex-card .done-mark{font-family:var(--mono);font-size:.72rem;color:var(--ok)}
+.checks{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.checks label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:.95rem}
+.checks input{margin-top:4px;accent-color:var(--ok);width:16px;height:16px;flex:none}
+details.reveal{border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+details.reveal summary{cursor:pointer;padding:9px 14px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.reveal summary::-webkit-details-marker{display:none}
+details.reveal summary::after{content:"mostrar";font-family:var(--mono);font-size:.72rem;color:var(--muted);font-weight:400;align-self:center}
+details.reveal[open] summary::after{content:"ocultar"}
+details.reveal>div{padding:0 14px 14px;display:grid;gap:10px}
+.ex-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+
+@media (max-width:560px){
+  .fc-actions{grid-template-columns:1fr 1fr}
+  .fc-actions .nav{grid-row:2}
+  .face{min-height:300px;padding:22px 18px}
+  .ex-card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){.card-in,.progress i{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>TLP IV · Recuperatorio 1er parcial</h1>
+      <span class="meta">POO · Patrones · SOLID</span>
+    </div>
+    <div class="row" id="units" role="group" aria-label="Unidad"></div>
+    <div class="tabs" role="tablist" id="tabs">
+      <button class="tab" role="tab" data-tab="resumen">Teoría</button>
+      <button class="tab" role="tab" data-tab="cards">Flashcards</button>
+      <button class="tab" role="tab" data-tab="quiz">Quiz</button>
+      <button class="tab" role="tab" data-tab="tablas">Tablas</button>
+      <button class="tab" role="tab" data-tab="practica">Práctica</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="view"></main>
+
+<!-- ======================= BLOQUES DE CÓDIGO (texto plano) ======================= -->
+
+<script type="text/plain" id="c-poo-tipos">
+let nombre: string = "Ana";
+let edad: number = 30;            // no hay int/float: todo es number
+let notas: number[] = [7, 8, 10];
+let x = 5;                        // inferencia: x ya es number
+
+// Sin enum: unión de literales (solo esos textos son válidos)
+type TipoEnvio = "estandar" | "express";
+let t: TipoEnvio = "express";
+// t = "urgente";   ❌ error de compilación
+
+// unknown = "no sé qué es, comprobalo antes de usarlo" (any está prohibido)
+function procesar(dato: unknown): string {
+  if (typeof dato === "string") return dato.toUpperCase();   // narrowing
+  return "desconocido";
+}
+
+// Template literal: el primer $ es literal, ${precio} interpola
+const precio = 1500;
+console.log(`Total: $${precio}`);   // Total: $1500
+</script>
+
+<script type="text/plain" id="c-poo-clase">
+class Producto {
+  nombre: string;            // 1) se DECLARA el atributo con su tipo
+  precio: number;
+
+  constructor(nombre: string, precio: number) {
+    this.nombre = nombre;    // 2) se ASIGNA con this  ← forma larga (la obligatoria)
+    this.precio = precio;
+  }
+
+  describir(): string {
+    return `${this.nombre}: $${this.precio}`;
+  }
+}
+
+const p1 = new Producto("Teclado", 10000);   // instancia 1
+const p2 = new Producto("Mouse", 5000);      // instancia 2: mismo molde, otro ESTADO
+
+// ❌ PROHIBIDO en el parcial (parameter properties):
+// class Producto { constructor(private nombre: string) {} }
+</script>
+
+<script type="text/plain" id="c-poo-encap">
+class CuentaBancaria {
+  private saldo: number = 0;            // nadie de afuera lo toca directo
+
+  depositar(monto: number): void {
+    if (monto <= 0) throw new Error("El monto debe ser mayor a 0");
+    this.saldo += monto;                // validar ANTES de modificar
+  }
+
+  consultarSaldo(): number {            // lectura controlada
+    return this.saldo;
+  }
+}
+
+// cuenta.saldo = -999;   ❌ Property 'saldo' is private
+</script>
+
+<script type="text/plain" id="c-poo-getset">
+class Persona {
+  private _edad: number;               // atributo real con OTRO nombre
+
+  constructor(edad: number) {
+    this._edad = 0;                    // para que strict no se queje
+    this.edad = edad;                  // pasa por el setter: valida al crear
+  }
+
+  get edad(): number { return this._edad; }        // p.edad (sin paréntesis)
+
+  set edad(valor: number) {                        // p.edad = 17
+    if (valor < 0 || valor > 120) throw new Error("Edad inválida");
+    this._edad = valor;
+  }
+
+  get esMayor(): boolean { return this._edad >= 18; }  // getter calculado, solo lectura
+}
+</script>
+
+<script type="text/plain" id="c-poo-herencia">
+class Empleado {
+  protected nombre: string;            // protected: las hijas lo pueden leer
+  constructor(nombre: string) {
+    this.nombre = nombre;
+  }
+  calcularSueldo(): number { return 0; }
+  describir(): string {
+    return `${this.nombre}: $${this.calcularSueldo()}`;
+  }
+}
+
+class EmpleadoFijo extends Empleado {
+  private sueldoBase: number;
+  constructor(nombre: string, sueldoBase: number) {
+    super(nombre);                     // 1° SIEMPRE super, antes de usar this
+    this.sueldoBase = sueldoBase;
+  }
+  override calcularSueldo(): number {  // redefine el método del padre
+    return this.sueldoBase;
+  }
+  override describir(): string {
+    return super.describir() + " (fijo)";   // llama a la versión del padre
+  }
+}
+</script>
+
+<script type="text/plain" id="c-poo-poli">
+const equipo: Empleado[] = [
+  new EmpleadoFijo("Juan", 100000),
+  new EmpleadoPorHoras("Marta", 80, 2500),
+];
+
+// ✅ CON polimorfismo: la misma línea, cada objeto responde a su manera
+let total = 0;
+for (const e of equipo) {
+  total += e.calcularSueldo();
+}
+
+// ❌ SIN polimorfismo (lo que NO hay que hacer)
+// if (e instanceof EmpleadoFijo) { ... } else if (e instanceof EmpleadoPorHoras) { ... }
+</script>
+
+<script type="text/plain" id="c-poo-abstracta">
+abstract class Habitacion {
+  readonly numero: number;                          // puede tener ESTADO
+  constructor(numero: number) {
+    this.numero = numero;
+  }
+  abstract calcularPrecio(noches: number): number;  // sin cuerpo: las hijas DEBEN escribirlo
+  describir(): string {                             // puede tener métodos con código
+    return `Habitación ${this.numero}`;
+  }
+}
+// new Habitacion(1);   ❌ no se puede instanciar una clase abstracta
+
+class Suite extends Habitacion {                    // sin constructor: usa el del padre
+  calcularPrecio(noches: number): number {
+    return 50000 * noches;
+  }
+}
+
+interface Pagable {                                 // contrato puro: sin código ni estado
+  descripcion: string;
+  monto(): number;
+}
+
+class Factura implements Pagable {
+  descripcion: string;
+  private importe: number;
+  constructor(descripcion: string, importe: number) {
+    this.descripcion = descripcion;
+    this.importe = importe;
+  }
+  monto(): number { return this.importe; }
+}
+</script>
+
+<script type="text/plain" id="c-poo-static">
+class Hotel {
+  static totalCheckIns: number = 0;      // UNO solo para toda la clase
+  private habitaciones: Habitacion[] = [];
+
+  checkIn(h: Habitacion): void {
+    this.habitaciones.push(h);
+    Hotel.totalCheckIns++;               // con el NOMBRE DE LA CLASE, no con this
+  }
+
+  get cantidad(): number {               // de ESTE hotel, ahora
+    return this.habitaciones.length;
+  }
+}
+
+class Funcion3D {
+  static readonly ANTEOJOS = 500;        // constante de clase
+}
+
+console.log(Hotel.totalCheckIns);        // sin new: pertenece a la clase
+</script>
+
+<script type="text/plain" id="c-poo-compos">
+class Motor {
+  arrancar(): string { return "Brrrm"; }
+}
+
+// ✅ Composición: el Auto TIENE un Motor (lo guarda como atributo)
+class Auto {
+  private motor: Motor;
+  constructor() {
+    this.motor = new Motor();
+  }
+  encender(): string {
+    return this.motor.arrancar();        // delega en su parte
+  }
+}
+
+// ❌ class Auto extends Motor   → un auto NO "es un" motor
+</script>
+
+<script type="text/plain" id="c-poo-errores">
+class SaldoInsuficienteError extends Error {
+  constructor(mensaje: string) {
+    super(mensaje);
+    this.name = "SaldoInsuficienteError";
+  }
+}
+
+try {
+  throw new SaldoInsuficienteError("Saldo insuficiente");
+} catch (e) {                       // en strict, e es unknown
+  if (e instanceof Error) {         // narrowing → ahora es Error
+    console.log(e.message);
+  }
+}
+
+class Cuenta {
+  private historial: string[] = [];
+  obtenerHistorial(): string[] {
+    return [...this.historial];     // ✅ copia defensiva, no la referencia real
+  }
+}
+</script>
+
+<script type="text/plain" id="c-pat-singleton">
+class ConfiguracionEmpresa {
+  private static instancia: ConfiguracionEmpresa | undefined;  // ① static privado
+  readonly recargoExpress = 2500;
+
+  private constructor() {}                                     // ② nadie hace new
+
+  static obtenerInstancia(): ConfiguracionEmpresa {            // ③ acceso estático
+    if (ConfiguracionEmpresa.instancia === undefined) {
+      ConfiguracionEmpresa.instancia = new ConfiguracionEmpresa();   // solo la 1° vez
+    }
+    return ConfiguracionEmpresa.instancia;
+  }
+}
+
+const a = ConfiguracionEmpresa.obtenerInstancia();
+const b = ConfiguracionEmpresa.obtenerInstancia();
+console.log(`Mismo Singleton: ${a === b}`);   // true
+// new ConfiguracionEmpresa();   ❌ Constructor of class is private
+</script>
+
+<script type="text/plain" id="c-pat-factory">
+interface Envio {                                   // ① tipo COMÚN
+  calcularCosto(base: number): number;
+}
+
+class EnvioEstandar implements Envio {              // ② productos concretos
+  calcularCosto(base: number): number { return base; }
+}
+
+class EnvioExpress implements Envio {
+  calcularCosto(base: number): number {
+    return base + ConfiguracionEmpresa.obtenerInstancia().recargoExpress;
+  }
+}
+
+class FabricaEnvios {                               // ③ la fábrica
+  static crear(tipo: "estandar" | "express"): Envio {   // devuelve el tipo COMÚN
+    if (tipo === "estandar") {
+      return new EnvioEstandar();                   // los new viven SOLO acá
+    }
+    return new EnvioExpress();
+  }
+}
+
+const envio = FabricaEnvios.crear("express");       // quien usa no conoce la clase concreta
+console.log(`Express: $${envio.calcularCosto(3000)}`);
+</script>
+
+<script type="text/plain" id="c-pat-observer">
+interface Observador {                               // ① contrato del observador
+  actualizar(nombre: string, estado: string): void;
+}
+
+class Soporte implements Observador {                // ② observador concreto
+  actualizar(nombre: string, estado: string): void {
+    console.log(`Soporte: ${nombre} pasó a ${estado}`);
+  }
+}
+
+class Equipo {                                       // ③ SUJETO
+  readonly nombre: string;
+  private estado: string = "ok";
+  private observadores: Observador[] = [];           // lista de la INTERFAZ
+
+  constructor(nombre: string) {
+    this.nombre = nombre;
+  }
+
+  agregarObservador(o: Observador): void { this.observadores.push(o); }
+  quitarObservador(o: Observador): void {
+    this.observadores = this.observadores.filter((x) => x !== o);
+  }
+
+  cambiarEstado(nuevo: string): void {
+    this.estado = nuevo;
+    this.notificar();                                // cambia → avisa
+  }
+
+  private notificar(): void {
+    for (const o of this.observadores) o.actualizar(this.nombre, this.estado);
+  }
+}
+</script>
+
+<script type="text/plain" id="c-pat-adapter">
+// ① TARGET: lo que espera el sistema nuevo
+interface Suscriptor {
+  avisar(pelicula: string, fecha: string): void;
+}
+
+// ② ADAPTEE: la clase vieja, con otra interfaz. NO SE MODIFICA.
+class SistemaPushViejo {
+  mandarPush(token: string, titulo: string, cuerpo: string): boolean {
+    console.log(`PUSH[${token}] ${titulo} — ${cuerpo}`);
+    return true;
+  }
+}
+
+// ③ ADAPTER: implementa el target y GUARDA al adaptee (composición)
+class PushAdapter implements Suscriptor {
+  private push: SistemaPushViejo;
+  private token: string;
+
+  constructor(push: SistemaPushViejo, token: string) {
+    this.push = push;
+    this.token = token;
+  }
+
+  avisar(pelicula: string, fecha: string): void {
+    this.push.mandarPush(this.token, "¡Estreno!", `${pelicula} (${fecha})`);   // TRADUCE
+  }
+}
+</script>
+
+<script type="text/plain" id="c-solid-srp">
+// ❌ UserManager tiene TRES motivos para cambiar
+class UserManager {
+  register(username: string, email: string): string {
+    if (!email.includes("@")) throw new Error("Email inválido");   // 1) validar
+    this.users.push({ username, email });                          // 2) guardar
+    return `Email enviado a ${email}`;                             // 3) avisar
+  }
+}
+
+// ✅ Una clase por responsabilidad, coordinadas por composición
+class UserValidator  { validate(email: string): void { /* ... */ } }
+class UserRepository { save(user: User): void { /* ... */ } }
+class EmailService   { sendWelcome(email: string): string { /* ... */ } }
+
+class UserRegistrationService {          // coordina, NO hace el trabajo
+  private validator: UserValidator;
+  private repository: UserRepository;
+  private email: EmailService;
+  // constructor que recibe y asigna los tres...
+  register(username: string, email: string): string {
+    this.validator.validate(email);
+    this.repository.save({ username, email });
+    return this.email.sendWelcome(email);
+  }
+}
+</script>
+
+<script type="text/plain" id="c-solid-ocp">
+// ❌ cada opción nueva = otro if en una clase que ya funcionaba
+class SistemaCobros {
+  cobrar(medio: string, monto: number): void {
+    let total = monto;
+    if (medio === "tarjeta") {
+      total = monto * 1.05;
+    }
+    // ...
+  }
+}
+
+// ✅ OCP: interfaz común + una clase por opción
+// OCP: se agregan medios de pago nuevos sin modificar SistemaCobros
+interface MedioDePago {
+  nombre: string;
+  calcularTotal(monto: number): number;
+}
+
+class Efectivo implements MedioDePago {
+  nombre = "Efectivo";
+  calcularTotal(monto: number): number { return monto; }
+}
+
+class Tarjeta implements MedioDePago {
+  nombre = "Tarjeta";
+  calcularTotal(monto: number): number { return monto * 1.05; }
+}
+// Mañana: class Transferencia implements MedioDePago {...}  → SistemaCobros NO se toca
+</script>
+
+<script type="text/plain" id="c-solid-lsp">
+class Rectangle {
+  protected width: number;
+  protected height: number;
+  constructor(w: number, h: number) { this.width = w; this.height = h; }
+  setWidth(w: number): void { this.width = w; }
+  setHeight(h: number): void { this.height = h; }
+  area(): number { return this.width * this.height; }
+}
+
+// ❌ Square "es un" rectángulo en matemática, pero NO se comporta como uno
+class Square extends Rectangle {
+  constructor(side: number) { super(side, side); }
+  override setWidth(w: number): void { this.width = w; this.height = w; }   // sorpresa
+  override setHeight(h: number): void { this.width = h; this.height = h; }  // sorpresa
+}
+
+function agrandar(r: Rectangle): void {
+  r.setWidth(5);
+  r.setHeight(10);
+  console.log(`Esperada: 50. Obtenida: ${r.area()}`);
+}
+agrandar(new Square(1));   // Obtenida: 100  ← la subclase rompió lo que esperaba la función
+
+// ✅ Solución: sacar la herencia y usar un contrato que ambos cumplan de verdad
+interface Shape { area(): number; }
+</script>
+
+<script type="text/plain" id="c-solid-isp">
+// ❌ interfaz "gorda": obliga a implementar lo que no corresponde
+interface Multifuncion {
+  imprimir(doc: string): void;
+  escanear(doc: string): void;
+  fax(doc: string): void;
+}
+
+class ImpresoraSimple implements Multifuncion {
+  imprimir(doc: string): void { console.log(`Imprimiendo ${doc}`); }
+  escanear(doc: string): void { throw new Error("No puedo escanear"); }  // compila, explota al usarlo
+  fax(doc: string): void { throw new Error("No tengo fax"); }
+}
+
+// ✅ ISP: interfaces chicas, cada clase implementa solo lo que puede
+interface Impresora { imprimir(doc: string): void; }
+interface Escaner   { escanear(doc: string): void; }
+interface Fax       { fax(doc: string): void; }
+
+class ImpresoraBasica implements Impresora { /* solo imprimir */ }
+class Multifuncional implements Impresora, Escaner, Fax { /* las tres */ }
+</script>
+
+<script type="text/plain" id="c-solid-dip">
+// ❌ la clase crea su propia dependencia concreta
+class ServicioNotificaciones {
+  notificar(mensaje: string): void {
+    const log = new ArchivoLog();        // ← acoplada a ArchivoLog para siempre
+    log.escribir(mensaje);
+  }
+}
+
+// ✅ DIP: depender de una abstracción y recibirla por constructor
+// DIP: el servicio depende de la interfaz Registro, no de una clase concreta
+interface Registro {
+  escribir(linea: string): void;
+}
+
+class RegistroArchivo implements Registro {
+  escribir(linea: string): void { console.log(`[LOG] ${linea}`); }
+}
+
+class ServicioNotificacionesBien {
+  private registro: Registro;            // depende de la ABSTRACCIÓN
+  constructor(registro: Registro) {      // la recibe desde AFUERA (inyección)
+    this.registro = registro;
+  }
+  notificar(mensaje: string): void {
+    this.registro.escribir(mensaje);
+  }
+}
+
+// Composition root: el único lugar donde se hacen los new y se conecta todo
+const servicio = new ServicioNotificacionesBien(new RegistroArchivo());
+</script>
+
+<script type="text/plain" id="c-exam-setup" data-lang="sh">
+mkdir parcial-tlp4-apellido
+cd parcial-tlp4-apellido
+npm init -y                  # después cambiar "type" a "module" en package.json
+npm i -D typescript          # local, como dependencia de desarrollo
+mkdir src
+# crear tsconfig.json, .gitignore (node_modules/) y ENTREGA.md
+npx tsc                      # tiene que terminar sin errores
+node src/ejercicio1.ts       # ejecutar (Node borra los tipos, NO los verifica)
+</script>
+
+<script type="text/plain" id="c-exam-tsconfig" data-lang="sh">
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
+  }
+}
+</script>
+
+<script type="text/plain" id="c-exam-git" data-lang="sh">
+git init
+git add .
+git commit -m "chore: configuración inicial"
+git branch -M main
+git remote add origin https://github.com/USUARIO/parcial-tlp4-apellido.git
+git push -u origin main
+
+# después de cada ejercicio:
+git add .
+git commit -m "feat(ej1): ejercicio 1 completo"
+git push
+</script>
+
+<script type="text/plain" id="c-tu-bug">
+// ❌ Lo que entregaste en el ejercicio 3
+notificar(canal: Canal, mensaje: string): void {
+  const costo = canal.calcularCosto();
+  console.log(this.registro.escribir(`${canal.nombre}: "${mensaje}" ($${costo})`));
+}
+// escribir() ya hace console.log y devuelve void → el console.log de afuera
+// imprime "undefined" después de cada línea. La salida no coincide.
+
+// ✅ Correcto: solo delegar
+notificar(canal: Canal, mensaje: string): void {
+  this.registro.escribir(`${canal.nombre}: "${mensaje}" ($${canal.calcularCosto()})`);
+}
+</script>
+
+<!-- ===== PRÁCTICA: códigos originales y soluciones ===== -->
+
+<script type="text/plain" id="c-orig-a3">
+class BaseDeDatosMySQL {
+  guardar(dato: string): void {
+    console.log(`[MySQL] ${dato}`);
+  }
+}
+
+class SistemaCobros {
+  cobrar(medio: string, monto: number): void {
+    let total = monto;
+    if (medio === "tarjeta") {
+      total = monto * 1.05;
+    }
+    const db = new BaseDeDatosMySQL();
+    db.guardar(`${medio}: $${total}`);
+  }
+}
+
+const sistema = new SistemaCobros();
+sistema.cobrar("efectivo", 1000);
+sistema.cobrar("tarjeta", 2000);
+</script>
+
+<script type="text/plain" id="c-sol-a1">
+abstract class Vehiculo {
+  readonly patente: string;
+
+  constructor(patente: string) {
+    this.patente = patente;
+  }
+
+  abstract calcularTarifa(horas: number): number;
+}
+
+class Auto extends Vehiculo {
+  calcularTarifa(horas: number): number {
+    return 1000 * horas;
+  }
+}
+
+class Moto extends Vehiculo {
+  calcularTarifa(horas: number): number {
+    return 500 * horas;
+  }
+}
+
+class Estacionamiento {
+  private vehiculos: Vehiculo[] = [];
+  static totalIngresos: number = 0;
+
+  ingresar(vehiculo: Vehiculo): void {
+    this.vehiculos.push(vehiculo);
+    Estacionamiento.totalIngresos++;
+  }
+
+  get cantidad(): number {
+    return this.vehiculos.length;
+  }
+
+  mostrarTarifas(horas: number): void {
+    for (const vehiculo of this.vehiculos) {
+      // polimorfismo: cada vehículo calcula su tarifa, sin if por tipo
+      console.log(`${vehiculo.patente} paga $${vehiculo.calcularTarifa(horas)}`);
+    }
+  }
+}
+
+// Bloque de prueba
+const estacionamiento = new Estacionamiento();
+estacionamiento.ingresar(new Auto("AB123CD"));
+estacionamiento.ingresar(new Moto("XY987ZW"));
+estacionamiento.mostrarTarifas(2);
+console.log(`Vehículos estacionados: ${estacionamiento.cantidad}`);
+console.log(`Total histórico de ingresos: ${Estacionamiento.totalIngresos}`);
+</script>
+
+<script type="text/plain" id="c-sol-a2">
+class ConfiguracionLocal {
+  private static instancia: ConfiguracionLocal | undefined;
+  readonly costoEnvio = 1500;
+
+  private constructor() {}
+
+  static obtenerInstancia(): ConfiguracionLocal {
+    if (ConfiguracionLocal.instancia === undefined) {
+      ConfiguracionLocal.instancia = new ConfiguracionLocal();
+    }
+    return ConfiguracionLocal.instancia;
+  }
+}
+
+interface Pedido {
+  calcularTotal(subtotal: number): number;
+}
+
+class PedidoRetiro implements Pedido {
+  calcularTotal(subtotal: number): number {
+    return subtotal;
+  }
+}
+
+class PedidoEnvio implements Pedido {
+  calcularTotal(subtotal: number): number {
+    // el 1500 NO se escribe acá: se lee del Singleton
+    return subtotal + ConfiguracionLocal.obtenerInstancia().costoEnvio;
+  }
+}
+
+class FabricaPedidos {
+  static crear(tipo: "retiro" | "envio"): Pedido {
+    if (tipo === "retiro") {
+      return new PedidoRetiro();
+    }
+    return new PedidoEnvio();
+  }
+}
+
+// Bloque de prueba
+const config1 = ConfiguracionLocal.obtenerInstancia();
+const config2 = ConfiguracionLocal.obtenerInstancia();
+const retiro = FabricaPedidos.crear("retiro");
+const envio = FabricaPedidos.crear("envio");
+
+console.log(`Mismo Singleton: ${config1 === config2}`);
+console.log(`Retiro: $${retiro.calcularTotal(4000)}`);
+console.log(`Envío: $${envio.calcularTotal(4000)}`);
+</script>
+
+<script type="text/plain" id="c-sol-a3">
+// OCP: se pueden agregar medios de pago nuevos sin modificar SistemaCobros
+interface MedioDePago {
+  nombre: string;
+  calcularTotal(monto: number): number;
+}
+
+class Efectivo implements MedioDePago {
+  nombre = "Efectivo";
+  calcularTotal(monto: number): number {
+    return monto;
+  }
+}
+
+class Tarjeta implements MedioDePago {
+  nombre = "Tarjeta";
+  calcularTotal(monto: number): number {
+    return monto * 1.05;
+  }
+}
+
+// DIP: SistemaCobros depende de la abstracción Repositorio, no de MySQL
+interface Repositorio {
+  guardar(dato: string): void;
+}
+
+class RepositorioMySQL implements Repositorio {
+  guardar(dato: string): void {
+    console.log(`[MySQL] ${dato}`);
+  }
+}
+
+class RepositorioArchivo implements Repositorio {
+  guardar(dato: string): void {
+    console.log(`[Archivo] ${dato}`);
+  }
+}
+
+class SistemaCobros {
+  private repositorio: Repositorio;
+
+  constructor(repositorio: Repositorio) {
+    this.repositorio = repositorio;
+  }
+
+  cobrar(medio: MedioDePago, monto: number): void {
+    const total = medio.calcularTotal(monto);
+    this.repositorio.guardar(`${medio.nombre}: $${total}`);
+  }
+}
+
+// Bloque de prueba
+const sistemaMySQL = new SistemaCobros(new RepositorioMySQL());
+sistemaMySQL.cobrar(new Efectivo(), 1000);
+sistemaMySQL.cobrar(new Tarjeta(), 2000);
+
+const sistemaArchivo = new SistemaCobros(new RepositorioArchivo());
+sistemaArchivo.cobrar(new Efectivo(), 500);
+</script>
+
+<script type="text/plain" id="c-orig-b3">
+class ArchivoLog {
+  escribir(linea: string): void {
+    console.log(`[LOG] ${linea}`);
+  }
+}
+
+class ServicioNotificaciones {
+  notificar(canal: string, mensaje: string): void {
+    let costo = 0;
+    if (canal === "sms") {
+      costo = 15;
+    }
+    const log = new ArchivoLog();
+    log.escribir(`${canal}: "${mensaje}" ($${costo})`);
+  }
+}
+
+const servicio = new ServicioNotificaciones();
+servicio.notificar("email", "Hola");
+servicio.notificar("sms", "Hola");
+</script>
+
+<script type="text/plain" id="c-sol-b1">
+abstract class Habitacion {
+  readonly numero: number;
+
+  constructor(numero: number) {
+    this.numero = numero;
+  }
+
+  abstract calcularPrecio(noches: number): number;
+}
+
+class Simple extends Habitacion {
+  calcularPrecio(noches: number): number {
+    return 20000 * noches;
+  }
+}
+
+class Suite extends Habitacion {
+  calcularPrecio(noches: number): number {
+    return 50000 * noches;
+  }
+}
+
+class Hotel {
+  private habitaciones: Habitacion[] = [];
+  static totalCheckIns: number = 0;
+
+  checkIn(habitacion: Habitacion): void {
+    this.habitaciones.push(habitacion);
+    Hotel.totalCheckIns++;
+  }
+
+  get cantidad(): number {
+    return this.habitaciones.length;
+  }
+
+  mostrarPrecios(noches: number): void {
+    for (const habitacion of this.habitaciones) {
+      console.log(`Habitación ${habitacion.numero} paga $${habitacion.calcularPrecio(noches)}`);
+    }
+  }
+}
+
+// Bloque de prueba
+const hotel = new Hotel();
+hotel.checkIn(new Simple(101));
+hotel.checkIn(new Suite(303));
+hotel.mostrarPrecios(2);
+console.log(`Habitaciones ocupadas: ${hotel.cantidad}`);
+console.log(`Total histórico de check-ins: ${Hotel.totalCheckIns}`);
+</script>
+
+<script type="text/plain" id="c-sol-b2">
+class ConfiguracionEmpresa {
+  private static instancia: ConfiguracionEmpresa | undefined;
+  readonly recargoExpress = 2500;
+
+  private constructor() {}
+
+  static obtenerInstancia(): ConfiguracionEmpresa {
+    if (ConfiguracionEmpresa.instancia === undefined) {
+      ConfiguracionEmpresa.instancia = new ConfiguracionEmpresa();
+    }
+    return ConfiguracionEmpresa.instancia;
+  }
+}
+
+interface Envio {
+  calcularCosto(base: number): number;
+}
+
+class EnvioEstandar implements Envio {
+  calcularCosto(base: number): number {
+    return base;
+  }
+}
+
+class EnvioExpress implements Envio {
+  calcularCosto(base: number): number {
+    return base + ConfiguracionEmpresa.obtenerInstancia().recargoExpress;
+  }
+}
+
+class FabricaEnvios {
+  static crear(tipo: "estandar" | "express"): Envio {
+    if (tipo === "estandar") {
+      return new EnvioEstandar();
+    }
+    return new EnvioExpress();
+  }
+}
+
+// Bloque de prueba
+const empresa1 = ConfiguracionEmpresa.obtenerInstancia();
+const empresa2 = ConfiguracionEmpresa.obtenerInstancia();
+console.log(`Mismo Singleton: ${empresa1 === empresa2}`);
+console.log(`Estándar: $${FabricaEnvios.crear("estandar").calcularCosto(3000)}`);
+console.log(`Express: $${FabricaEnvios.crear("express").calcularCosto(3000)}`);
+</script>
+
+<script type="text/plain" id="c-sol-b3">
+// OCP: se pueden agregar canales nuevos sin modificar ServicioNotificaciones
+interface Canal {
+  nombre: string;
+  calcularCosto(): number;
+}
+
+class Email implements Canal {
+  nombre = "Email";
+  calcularCosto(): number {
+    return 0;
+  }
+}
+
+class SMS implements Canal {
+  nombre = "SMS";
+  calcularCosto(): number {
+    return 15;
+  }
+}
+
+// DIP: el servicio depende de la abstracción Registro, no de ArchivoLog
+interface Registro {
+  escribir(linea: string): void;
+}
+
+class RegistroArchivo implements Registro {
+  escribir(linea: string): void {
+    console.log(`[LOG] ${linea}`);
+  }
+}
+
+class RegistroBaseDeDatos implements Registro {
+  escribir(linea: string): void {
+    console.log(`[DB] ${linea}`);
+  }
+}
+
+class ServicioNotificaciones {
+  private registro: Registro;
+
+  constructor(registro: Registro) {
+    this.registro = registro;
+  }
+
+  notificar(canal: Canal, mensaje: string): void {
+    this.registro.escribir(`${canal.nombre}: "${mensaje}" ($${canal.calcularCosto()})`);
+  }
+}
+
+// Bloque de prueba
+const servicio = new ServicioNotificaciones(new RegistroArchivo());
+servicio.notificar(new Email(), "Hola");
+servicio.notificar(new SMS(), "Hola");
+
+const servicioDB = new ServicioNotificaciones(new RegistroBaseDeDatos());
+servicioDB.notificar(new Email(), "Prueba");
+</script>
+
+<script type="text/plain" id="c-give-c2">
+// Dado por la consigna: NO se modifica
+class SistemaPushViejo {
+  mandarPush(token: string, titulo: string, cuerpo: string): boolean {
+    console.log(`PUSH[${token}] ${titulo} — ${cuerpo}`);
+    return true;
+  }
+}
+</script>
+
+<script type="text/plain" id="c-orig-c3">
+class ServicioEntradas {
+  emitir(pelicula: string, precio: number, tipo: string): number {
+    let final = precio;
+    switch (tipo) {
+      case "estudiante":
+        final = precio * 0.7;
+        break;
+      case "jubilado":
+        final = precio * 0.5;
+        break;
+      case "general":
+        final = precio;
+        break;
+    }
+    console.log(`*** ${pelicula} ***`);
+    console.log(`Tarifa ${tipo}: $${final}`);
+    return final;
+  }
+}
+
+const servicio = new ServicioEntradas();
+let total = 0;
+total += servicio.emitir("Dune", 10000, "general");
+total += servicio.emitir("Dune", 10000, "estudiante");
+total += servicio.emitir("Dune", 10000, "jubilado");
+console.log(`Recaudado: $${total}`);
+</script>
+
+<script type="text/plain" id="c-sol-c1">
+abstract class Funcion {
+  readonly sala: number;
+  readonly pelicula: string;
+
+  constructor(sala: number, pelicula: string) {
+    this.sala = sala;
+    this.pelicula = pelicula;
+  }
+
+  abstract precioEntrada(): number;
+}
+
+class Funcion2D extends Funcion {
+  precioEntrada(): number {
+    return 6000;
+  }
+}
+
+class Funcion3D extends Funcion {
+  static readonly ANTEOJOS = 500;   // constante de clase
+  precioEntrada(): number {
+    return 8500 + Funcion3D.ANTEOJOS;
+  }
+}
+
+class Funcion4D extends Funcion {
+  precioEntrada(): number {
+    return 12000;
+  }
+}
+
+class Complejo {
+  private funciones: Funcion[] = [];
+  static totalEntradas: number = 0;
+
+  programar(funcion: Funcion): void {
+    this.funciones.push(funcion);
+  }
+
+  vender(sala: number, cantidad: number): number {
+    const funcion = this.funciones.find((f) => f.sala === sala);
+    if (funcion === undefined) {
+      throw new Error(`No hay función en la sala ${sala}`);
+    }
+    Complejo.totalEntradas += cantidad;
+    return funcion.precioEntrada() * cantidad;
+  }
+
+  get cantidadFunciones(): number {
+    return this.funciones.length;
+  }
+
+  cartelera(): void {
+    for (const f of this.funciones) {
+      console.log(`Sala ${f.sala} · ${f.pelicula}: $${f.precioEntrada()}`);
+    }
+  }
+}
+
+// Bloque de prueba
+const complejo = new Complejo();
+complejo.programar(new Funcion2D(1, "Relatos salvajes"));
+complejo.programar(new Funcion3D(2, "Avatar"));
+complejo.programar(new Funcion4D(3, "Dune"));
+complejo.cartelera();
+console.log(`Venta sala 2: $${complejo.vender(2, 3)}`);
+console.log(`Venta sala 3: $${complejo.vender(3, 2)}`);
+try {
+  complejo.vender(9, 1);
+} catch (e) {
+  if (e instanceof Error) console.log(e.message);
+}
+console.log(`Funciones: ${complejo.cantidadFunciones}`);
+console.log(`Entradas vendidas: ${Complejo.totalEntradas}`);
+</script>
+
+<script type="text/plain" id="c-sol-c2">
+// Observer: contrato del observador
+interface Suscriptor {
+  avisar(pelicula: string, fecha: string): void;
+}
+
+class SuscriptorEmail implements Suscriptor {
+  private email: string;
+  constructor(email: string) {
+    this.email = email;
+  }
+  avisar(pelicula: string, fecha: string): void {
+    console.log(`Email a ${this.email}: estreno de ${pelicula} el ${fecha}`);
+  }
+}
+
+// Adaptee: dado, no se modifica
+class SistemaPushViejo {
+  mandarPush(token: string, titulo: string, cuerpo: string): boolean {
+    console.log(`PUSH[${token}] ${titulo} — ${cuerpo}`);
+    return true;
+  }
+}
+
+// Adapter: implementa Suscriptor y traduce a mandarPush
+class PushAdapter implements Suscriptor {
+  private push: SistemaPushViejo;
+  private token: string;
+
+  constructor(push: SistemaPushViejo, token: string) {
+    this.push = push;
+    this.token = token;
+  }
+
+  avisar(pelicula: string, fecha: string): void {
+    this.push.mandarPush(this.token, "¡Estreno!", `${pelicula} (${fecha})`);
+  }
+}
+
+// Observer: sujeto
+class Cartelera {
+  private suscriptores: Suscriptor[] = [];
+
+  suscribir(s: Suscriptor): void {
+    this.suscriptores.push(s);
+  }
+
+  desuscribir(s: Suscriptor): void {
+    this.suscriptores = this.suscriptores.filter((x) => x !== s);
+  }
+
+  anunciarEstreno(pelicula: string, fecha: string): void {
+    for (const s of this.suscriptores) {
+      s.avisar(pelicula, fecha);
+    }
+  }
+}
+
+// Bloque de prueba
+const cartelera = new Cartelera();
+const ana = new SuscriptorEmail("ana@mail.com");
+cartelera.suscribir(ana);
+cartelera.suscribir(new PushAdapter(new SistemaPushViejo(), "tok-77"));
+cartelera.anunciarEstreno("Dune 3", "12/03");
+cartelera.desuscribir(ana);
+cartelera.anunciarEstreno("Toy Story 5", "19/06");
+</script>
+
+<script type="text/plain" id="c-sol-c3">
+// OCP: se pueden agregar descuentos nuevos sin modificar ServicioEntradas
+interface Descuento {
+  nombre: string;
+  aplicar(precio: number): number;
+}
+
+class SinDescuento implements Descuento {
+  nombre = "general";
+  aplicar(precio: number): number {
+    return precio;
+  }
+}
+
+class DescuentoEstudiante implements Descuento {
+  nombre = "estudiante";
+  aplicar(precio: number): number {
+    return precio * 0.7;
+  }
+}
+
+class DescuentoJubilado implements Descuento {
+  nombre = "jubilado";
+  aplicar(precio: number): number {
+    return precio * 0.5;
+  }
+}
+
+// SRP: imprimir el ticket es una responsabilidad aparte del cálculo
+interface Impresora {
+  imprimir(lineas: string[]): void;
+}
+
+class ImpresoraConsola implements Impresora {
+  imprimir(lineas: string[]): void {
+    for (const linea of lineas) console.log(linea);
+  }
+}
+
+class ServicioEntradas {
+  private impresora: Impresora;
+
+  constructor(impresora: Impresora) {
+    this.impresora = impresora;
+  }
+
+  emitir(pelicula: string, precio: number, descuento: Descuento): number {
+    const final = descuento.aplicar(precio);
+    this.impresora.imprimir([`*** ${pelicula} ***`, `Tarifa ${descuento.nombre}: $${final}`]);
+    return final;
+  }
+}
+
+// Bloque de prueba (misma salida que el original)
+const servicio = new ServicioEntradas(new ImpresoraConsola());
+let total = 0;
+total += servicio.emitir("Dune", 10000, new SinDescuento());
+total += servicio.emitir("Dune", 10000, new DescuentoEstudiante());
+total += servicio.emitir("Dune", 10000, new DescuentoJubilado());
+console.log(`Recaudado: $${total}`);
+</script>
+
+<script type="text/plain" id="c-orig-d3">
+class Transporte {
+  nombre: string;
+  constructor(nombre: string) {
+    this.nombre = nombre;
+  }
+  reservarAsiento(pasajero: string): string {
+    return `${this.nombre}: asiento para ${pasajero}`;
+  }
+  despacharEquipaje(kilos: number): string {
+    return `${this.nombre}: ${kilos} kg despachados`;
+  }
+  servirComida(): string {
+    return `${this.nombre}: menú servido`;
+  }
+}
+
+class Avion extends Transporte {
+  constructor() { super("Avión"); }
+}
+
+class Colectivo extends Transporte {
+  constructor() { super("Colectivo"); }
+  override despacharEquipaje(kilos: number): string {
+    return `${this.nombre}: ${kilos} kg en bodega`;
+  }
+  override servirComida(): string {
+    throw new Error("El colectivo no sirve comida");
+  }
+}
+
+class Traslado extends Transporte {
+  constructor() { super("Traslado"); }
+  override reservarAsiento(pasajero: string): string {
+    return `${this.nombre}: lugar para ${pasajero}`;
+  }
+  override despacharEquipaje(_kilos: number): string {
+    throw new Error("El traslado no lleva equipaje");
+  }
+  override servirComida(): string {
+    throw new Error("El traslado no sirve comida");
+  }
+}
+
+function reservarTodos(transportes: Transporte[], pasajero: string): void {
+  for (const t of transportes) console.log(t.reservarAsiento(pasajero));
+}
+
+function servirATodos(transportes: Transporte[]): void {
+  for (const t of transportes) {
+    try {
+      console.log(t.servirComida());
+    } catch (e) {
+      if (e instanceof Error) console.log(`ERROR: ${e.message}`);
+    }
+  }
+}
+
+const avion = new Avion();
+const colectivo = new Colectivo();
+const traslado = new Traslado();
+reservarTodos([avion, colectivo, traslado], "Ana");
+console.log(avion.despacharEquipaje(23));
+console.log(colectivo.despacharEquipaje(15));
+servirATodos([avion, colectivo]);
+try {
+  console.log(traslado.despacharEquipaje(10));
+} catch (e) {
+  if (e instanceof Error) console.log(`ERROR: ${e.message}`);
+}
+</script>
+
+<script type="text/plain" id="c-sol-d1">
+abstract class Paquete {
+  readonly destino: string;
+  private _noches: number;
+
+  constructor(destino: string, noches: number) {
+    this.destino = destino;
+    this._noches = 0;
+    this.noches = noches;            // pasa por el setter: valida al crear
+  }
+
+  get noches(): number {
+    return this._noches;
+  }
+
+  set noches(valor: number) {
+    if (!Number.isInteger(valor) || valor < 1 || valor > 30) {
+      throw new Error("Las noches deben estar entre 1 y 30");
+    }
+    this._noches = valor;
+  }
+
+  abstract precioPorNoche(): number;
+
+  precioTotal(): number {
+    return this.precioPorNoche() * this._noches;
+  }
+}
+
+class PaqueteNacional extends Paquete {
+  precioPorNoche(): number {
+    return 40000;
+  }
+}
+
+class PaqueteInternacional extends Paquete {
+  static readonly TASA_AEROPORTUARIA = 60000;
+
+  precioPorNoche(): number {
+    return 90000;
+  }
+
+  override precioTotal(): number {
+    return super.precioTotal() + PaqueteInternacional.TASA_AEROPORTUARIA;   // reutiliza al padre
+  }
+}
+
+class Agencia {
+  private ventas: Paquete[] = [];
+  static paquetesVendidos: number = 0;
+
+  vender(p: Paquete): void {
+    this.ventas.push(p);
+    Agencia.paquetesVendidos++;
+  }
+
+  get totalVendido(): number {
+    return this.ventas.reduce((acc, p) => acc + p.precioTotal(), 0);
+  }
+
+  resumen(): void {
+    for (const p of this.ventas) {
+      console.log(`${p.destino} (${p.noches} noches): $${p.precioTotal()}`);
+    }
+  }
+}
+
+// Bloque de prueba
+const agencia = new Agencia();
+const bariloche = new PaqueteNacional("Bariloche", 5);
+agencia.vender(bariloche);
+agencia.vender(new PaqueteInternacional("Madrid", 7));
+bariloche.noches = 6;
+agencia.resumen();
+try {
+  bariloche.noches = 45;
+} catch (e) {
+  if (e instanceof Error) console.log(e.message);
+}
+console.log(`Total vendido: $${agencia.totalVendido}`);
+console.log(`Paquetes vendidos: ${Agencia.paquetesVendidos}`);
+</script>
+
+<script type="text/plain" id="c-sol-d2">
+class CotizacionDolar {
+  private static instancia: CotizacionDolar | undefined;
+  readonly valor = 1000;
+
+  private constructor() {}
+
+  static obtenerInstancia(): CotizacionDolar {
+    if (CotizacionDolar.instancia === undefined) {
+      CotizacionDolar.instancia = new CotizacionDolar();
+    }
+    return CotizacionDolar.instancia;
+  }
+}
+
+interface Servicio {
+  descripcion(): string;
+  precioEnPesos(): number;
+}
+
+class Excursion implements Servicio {
+  private nombre: string;
+  private pesos: number;
+  constructor(nombre: string, pesos: number) {
+    this.nombre = nombre;
+    this.pesos = pesos;
+  }
+  descripcion(): string {
+    return `Excursión ${this.nombre}`;
+  }
+  precioEnPesos(): number {
+    return this.pesos;
+  }
+}
+
+class VueloInternacional implements Servicio {
+  private ruta: string;
+  private dolares: number;
+  constructor(ruta: string, dolares: number) {
+    this.ruta = ruta;
+    this.dolares = dolares;
+  }
+  descripcion(): string {
+    return `Vuelo ${this.ruta}`;
+  }
+  precioEnPesos(): number {
+    return this.dolares * CotizacionDolar.obtenerInstancia().valor;   // no se escribe 1000
+  }
+}
+
+class FabricaServicios {
+  static crear(tipo: "excursion" | "vuelo", nombre: string, monto: number): Servicio {
+    if (tipo === "excursion") {
+      return new Excursion(nombre, monto);
+    }
+    return new VueloInternacional(nombre, monto);
+  }
+}
+
+// Bloque de prueba
+console.log(`Mismo Singleton: ${CotizacionDolar.obtenerInstancia() === CotizacionDolar.obtenerInstancia()}`);
+const servicios: Servicio[] = [
+  FabricaServicios.crear("excursion", "Cerro Catedral", 85000),
+  FabricaServicios.crear("vuelo", "EZE-MAD", 950),
+];
+let total = 0;
+for (const s of servicios) {
+  console.log(`${s.descripcion()}: $${s.precioEnPesos()}`);
+  total += s.precioEnPesos();
+}
+console.log(`Total: $${total}`);
+</script>
+
+<script type="text/plain" id="c-sol-d3">
+// ISP: interfaces chicas; cada transporte implementa solo lo que ofrece
+interface Reservable {
+  readonly nombre: string;
+  reservarAsiento(pasajero: string): string;
+}
+
+// ISP: solo los transportes que llevan equipaje
+interface ConEquipaje {
+  despacharEquipaje(kilos: number): string;
+}
+
+// ISP + LSP: solo los que sirven comida; nadie hereda un método que no puede cumplir
+interface ConServicioABordo {
+  servirComida(): string;
+}
+
+class Avion implements Reservable, ConEquipaje, ConServicioABordo {
+  readonly nombre = "Avión";
+  reservarAsiento(pasajero: string): string {
+    return `${this.nombre}: asiento para ${pasajero}`;
+  }
+  despacharEquipaje(kilos: number): string {
+    return `${this.nombre}: ${kilos} kg despachados`;
+  }
+  servirComida(): string {
+    return `${this.nombre}: menú servido`;
+  }
+}
+
+class Colectivo implements Reservable, ConEquipaje {
+  readonly nombre = "Colectivo";
+  reservarAsiento(pasajero: string): string {
+    return `${this.nombre}: asiento para ${pasajero}`;
+  }
+  despacharEquipaje(kilos: number): string {
+    return `${this.nombre}: ${kilos} kg en bodega`;
+  }
+}
+
+class Traslado implements Reservable {
+  readonly nombre = "Traslado";
+  reservarAsiento(pasajero: string): string {
+    return `${this.nombre}: lugar para ${pasajero}`;
+  }
+}
+
+function reservarTodos(transportes: Reservable[], pasajero: string): void {
+  for (const t of transportes) console.log(t.reservarAsiento(pasajero));
+}
+
+function servirATodos(transportes: ConServicioABordo[]): void {
+  for (const t of transportes) console.log(t.servirComida());
+}
+
+// Bloque de prueba
+const avion = new Avion();
+const colectivo = new Colectivo();
+const traslado = new Traslado();
+reservarTodos([avion, colectivo, traslado], "Ana");
+console.log(avion.despacharEquipaje(23));
+console.log(colectivo.despacharEquipaje(15));
+servirATodos([avion]);
+// servirATodos([colectivo]);        ❌ no compila: Colectivo no es ConServicioABordo
+// traslado.despacharEquipaje(10);   ❌ no compila: Traslado no tiene ese método
+</script>
+
+<script>
+const UNITS = {
+  poo:   {name:"POO", full:"TypeScript y POO", c:"var(--u-poo)", desc:"Clases, los cuatro pilares, clase abstracta vs interface, static, readonly, getters y las reglas del examen. Es el ejercicio 1."},
+  pat:   {name:"Patrones", full:"Patrones de diseño", c:"var(--u-pat)", desc:"Singleton, Factory Method, Observer y Adapter: categoría, problema, piezas, ventajas y desventajas. Es el ejercicio 2."},
+  solid: {name:"SOLID", full:"Principios SOLID", c:"var(--u-solid)", desc:"SRP, OCP, LSP, ISP y DIP: la señal en el código, la solución y cómo refactorizar sin cambiar la salida. Es el ejercicio 3."},
+  exam:  {name:"El parcial", full:"Cómo se rinde el parcial", c:"var(--u-exam)", desc:"Setup del proyecto, commits de control, estrategia de 90 minutos, frases de consigna y la revisión de tu Tema B."}
+};
+
+/* ---------------- TEORÍA ---------------- */
+const SUMMARY = {
+poo:[
+{h:"1. TypeScript: lo mínimo indispensable",html:`
+<p><b>TypeScript = JavaScript + tipos.</b> Los tipos existen mientras escribís y verificás con <code>npx tsc</code>. Al ejecutar, se borran y queda JavaScript común.</p>
+<ul><li><b>Tipado estático</b>: los errores de tipo se detectan <b>antes</b> de ejecutar.</li>
+<li><b>Los tipos no existen en ejecución</b>: no podés hacer <code>instanceof MiInterfaz</code> (las interfaces desaparecen). Con <b>clases</b> sí, porque las clases existen en JavaScript.</li>
+<li><b>Inferencia</b>: <code>let x = 5</code> ya es <code>number</code>. Igual tipá siempre <b>parámetros y retorno</b> de métodos (en <code>strict</code> un parámetro sin tipo es error).</li>
+<li><b>Sin <code>enum</code></b> (prohibido): un conjunto fijo de opciones se escribe como <b>unión de literales</b>: <code>"estandar" | "express"</code>. Un valor mal escrito no compila.</li>
+<li><b><code>any</code> está prohibido</b>: apaga el chequeo. Si no sabés el tipo, usá <code>unknown</code> y comprobalo con <code>typeof</code> / <code>instanceof</code> (eso se llama <b>narrowing</b>).</li>
+<li>Con <code>strict</code>, <code>string</code> no incluye <code>undefined</code>: si algo puede faltar se escribe <code>Producto | undefined</code>.</li></ul>
+<pre class="code" data-code="poo-tipos"></pre>`},
+{h:"2. TypeScript en el proyecto: instalación local y tsconfig",html:`
+<p>Esto salió en <b>las dos teorías</b> (Tema A pregunta 1 y 2, Tema B pregunta 1 y 2).</p>
+<ul><li><code>npm i -D typescript</code>: el flag <b>-D</b> lo instala como <b>dependencia de desarrollo</b> (<code>devDependencies</code>). Se usa para programar y verificar, no en producción.</li>
+<li><b>Ventaja de instalarlo local</b>: <b>cada proyecto fija su propia versión</b>, sin depender de lo instalado en la máquina. Se ejecuta con <code>npx tsc</code>.</li>
+<li><code>noEmit: true</code>: <code>tsc</code> <b>solo verifica los tipos, no genera archivos .js</b>.</li>
+<li><code>erasableSyntaxOnly</code>: solo se acepta sintaxis que se pueda <b>borrar</b>. Por eso <code>enum</code> y los <i>parameter properties</i> no compilan.</li>
+<li><code>node archivo.ts</code> con un error de tipos: <b>Node lo ejecuta igual</b>, porque solo <b>borra</b> las anotaciones de tipo sin verificarlas. Que corra no significa que <code>npx tsc</code> pase.</li></ul>
+<div class="warn"><b>Trampa</b> "Node detiene la ejecución y muestra el error de tipos" es FALSO. Quien detecta los errores de tipo es <code>tsc</code>, no <code>node</code>.</div>`},
+{h:"3. Clases, objetos, constructor y this",html:`
+<ul><li><b>Clase</b>: el <b>molde</b>. Define atributos (datos) y métodos (comportamiento).</li>
+<li><b>Objeto / instancia</b>: cada cosa concreta creada con <code>new</code>.</li>
+<li><b>Constructor</b>: se ejecuta al hacer <code>new</code>; inicializa los atributos.</li>
+<li><b><code>this</code></b>: "el objeto actual".</li></ul>
+<p>Si creás tres instancias de la misma clase, lo que varía entre ellas es el <b>estado</b>: los <b>valores de sus atributos</b>. Los métodos y el constructor son los mismos para todas (Tema A, pregunta 3).</p>
+<pre class="code" data-code="poo-clase"></pre>
+<div class="note"><b>Regla del examen</b> Constructor en <b>forma larga</b>: declarar el atributo y asignarlo con <code>this.x = x</code>. Nada de <code>constructor(private x: string)</code>. Con <code>strict</code>, todo atributo declarado tiene que asignarse en el constructor o tener valor inicial (<code>private lista: X[] = []</code>).</div>`},
+{h:"4. Pilar 1: Abstracción",html:`
+<p><b>Abstraer es quedarse solo con lo que importa para el problema</b> y descartar el resto. Un <code>Cliente</code> de un banco tiene DNI, nombre y cuentas; el color de ojos no aporta nada.</p>
+<ul><li>Se ve en <b>qué atributos y métodos elegís</b> poner en la clase.</li>
+<li>También es abstracción <b>ocultar el "cómo"</b> detrás de un nombre claro: quien llama a <code>vender(3)</code> no necesita saber cómo se descuenta el stock.</li>
+<li>Niveles: clase concreta → <b>clase abstracta</b> (molde parcial) → <b>interface</b> (contrato puro).</li></ul>
+<div class="note"><b>Abstracción vs encapsulamiento</b> Abstracción = <b>qué</b> muestro y modelo. Encapsulamiento = <b>cómo protejo</b> el estado.</div>`},
+{h:"5. Pilar 2: Encapsulamiento y modificadores de acceso",html:`
+<p><b>El objeto protege su propio estado</b>: desde afuera solo se modifica a través de sus métodos, que validan.</p>
+<pre class="code" data-code="poo-encap"></pre>
+<div class="mini"><table><thead><tr><th>Modificador</th><th>¿Quién lo ve?</th><th>Uso típico</th></tr></thead><tbody>
+<tr><td><b>public</b> (por defecto)</td><td>Todos</td><td>Operaciones que ofrece el objeto</td></tr>
+<tr><td><b>private</b></td><td>Solo la propia clase</td><td>Estado interno, listas internas</td></tr>
+<tr><td><b>protected</b></td><td>La clase y sus subclases, <b>no desde afuera</b></td><td>Datos que las hijas necesitan</td></tr>
+<tr><td><b>readonly</b></td><td>Se lee, pero se asigna <b>una sola vez</b> (al declarar o en el constructor)</td><td>Identificadores: <code>numero</code>, <code>patente</code></td></tr>
+</tbody></table></div>
+<ul><li>Validar <b>antes</b> de modificar: si falla, el objeto queda como estaba.</li>
+<li>Lanzar <code>Error</code> en vez de <code>console.log</code> cuando algo es inválido.</li>
+<li>No devolver la referencia a una lista interna: devolver una copia <code>[...this.lista]</code>.</li></ul>`},
+{h:"6. Getters y setters",html:`
+<p>Un <b>getter</b> se lee como atributo pero ejecuta código. Un <b>setter</b> se asigna como atributo pero ejecuta código (por ejemplo, validar).</p>
+<pre class="code" data-code="poo-getset"></pre>
+<ul><li>El atributo real se llama distinto (<code>_edad</code>). <b>Si se llamara igual que el setter, se llamaría a sí mismo infinitamente</b>.</li>
+<li>En el constructor se asigna con el setter (<code>this.edad = edad</code>) para validar también al crear.</li>
+<li>Getter <b>sin</b> setter = propiedad de solo lectura calculada (ej.: <code>get cantidad()</code> del parcial).</li>
+<li>Getter para algo que "se siente" un dato (<code>cantidad</code>, <code>total</code>); método para una acción o algo con parámetros (<code>calcularPrecio(noches)</code>).</li></ul>`},
+{h:"7. Pilar 3: Herencia",html:`
+<p>Una <b>subclase</b> toma atributos y métodos de una <b>superclase</b> y puede agregar o redefinir. Relación <b>"es un"</b>.</p>
+<pre class="code" data-code="poo-herencia"></pre>
+<ul><li><code>extends</code>: herencia <b>simple</b> (una sola clase padre).</li>
+<li><code>super(...)</code> es <b>obligatorio</b> en el constructor de la hija y va <b>antes de usar <code>this</code></b>.</li>
+<li>Si la hija <b>no</b> declara constructor, usa el del padre (por eso <code>class Suite extends Habitacion</code> no lo necesita).</li>
+<li>Si el padre declara algo <code>private</code>, la hija no lo puede leer: usá <code>protected</code>.</li>
+<li><b>Override</b>: la hija redefine un método heredado con la misma firma. <b>Overload</b>: varias firmas del mismo nombre en la misma clase.</li></ul>`},
+{h:"8. Pilar 4: Polimorfismo",html:`
+<p><b>Mismo mensaje, distinto comportamiento</b> según el objeto real que lo recibe. Es lo que pide "recorre el arreglo y muestra cuánto paga cada uno, llamando al método de cada objeto (sin <code>if</code> por tipo)".</p>
+<pre class="code" data-code="poo-poli"></pre>
+<div class="note"><b>Pregunta del Tema B</b> "Se recorre una lista de Empleado llamando a <code>calcularSueldo()</code> y cada objeto responde con su propio cálculo, sin que el código sepa de qué tipo es cada uno" → <b>Polimorfismo</b>. No es encapsulamiento (proteger estado) ni abstracción (modelar lo relevante).</div>
+<p>La señal de que lo usaste bien: <b>no hay ningún <code>if</code>/<code>switch</code>/<code>instanceof</code> preguntando el tipo</b>. Si aparece un tipo nuevo, se agrega una clase y no se toca el recorrido (eso es OCP).</p>`},
+{h:"9. Clase abstracta vs interface",html:`
+<pre class="code" data-code="poo-abstracta"></pre>
+<div class="cols"><div><h4>Clase abstracta</h4><ul><li><b>Molde parcial</b>: código común + métodos <code>abstract</code> que cada hija completa.</li><li>Puede tener <b>estado</b> y constructor.</li><li><b>No se instancia</b>.</li><li>Una clase extiende <b>una sola</b>.</li><li>Relación "es un".</li></ul></div>
+<div><h4>Interface</h4><ul><li><b>Contrato puro</b>: solo firmas, sin código ni estado.</li><li>Una clase implementa <b>varias</b> (<code>implements A, B</code>).</li><li>Desaparece al ejecutar.</li><li>Relación "puede hacer".</li></ul></div></div>
+<div class="note"><b>En el parcial</b> Ejercicio 1: <code>abstract class</code> con método abstracto (Vehiculo, Habitacion). Ejercicio 2 y 3: <code>interface</code> (Pedido, Envio, Canal, Registro).</div>`},
+{h:"10. static y readonly",html:`
+<pre class="code" data-code="poo-static"></pre>
+<ul><li><b><code>static</code> pertenece a la clase y es compartido por todas sus instancias</b> (Tema B pregunta 3). Se accede con <code>Clase.miembro</code>, también dentro de los métodos: <code>Hotel.totalCheckIns</code>, <b>no</b> <code>this.totalCheckIns</code>.</li>
+<li>Usos: contadores globales, constantes de clase, métodos que no dependen de un objeto (<code>FabricaEnvios.crear</code>) y la instancia del Singleton.</li>
+<li><b><code>readonly</code> impide que se reasigne después del constructor, incluso desde dentro de la clase</b> (Tema B pregunta 4). Sí se puede leer desde afuera.</li>
+<li><code>readonly</code> en un arreglo protege la <b>referencia</b>, no el contenido: <code>push</code> sigue funcionando.</li></ul>
+<div class="note"><b>Static vs getter</b> <code>Hotel.totalCheckIns</code> cuenta todos los ingresos de la historia (clase). <code>hotel.cantidad</code> cuenta cuántas hay ahora en ese hotel (instancia).</div>`},
+{h:"11. Relaciones: herencia vs composición",html:`
+<ul><li><b>Herencia</b>: "<b>es un</b>" → <code>class Suite extends Habitacion</code>.</li>
+<li><b>Composición</b>: "<b>tiene un</b>" y la parte no vive sin el todo → un atributo creado y poseído por la clase.</li>
+<li><b>Agregación</b>: "tiene un", pero la parte existe por separado (se recibe de afuera).</li>
+<li><b>Asociación / uso</b>: "usa un" → un parámetro de un método.</li></ul>
+<pre class="code" data-code="poo-compos"></pre>
+<div class="note"><b>Tema A pregunta 5</b> "Un Auto tiene un Motor" → <b>composición</b>: el Auto guarda una instancia de Motor como atributo. <b>"Preferí composición sobre herencia"</b>: la herencia acopla fuerte y solo se hereda de una clase.</div>`},
+{h:"12. Errores y copias defensivas",html:`
+<pre class="code" data-code="poo-errores"></pre>
+<ul><li><code>throw</code> corta la ejecución y obliga a quien llama a enterarse; un <code>console.log</code> se pierde.</li>
+<li>En <code>catch (e)</code>, con strict <code>e</code> es <code>unknown</code>: preguntá <code>e instanceof Error</code> antes de usar <code>e.message</code>.</li>
+<li>Errores propios: clases que extienden <code>Error</code> y llaman a <code>super(mensaje)</code>.</li>
+<li>Los arreglos se pasan por referencia: devolver <code>[...this.lista]</code>, no <code>this.lista</code>.</li></ul>`},
+{h:"13. Trampas frecuentes del ejercicio 1",html:`
+<ol><li>Olvidar <code>super(...)</code> o usar <code>this</code> antes → no compila.</li>
+<li><code>private</code> en el padre cuando la hija lo necesita → <code>protected</code>.</li>
+<li>Acceder al <code>static</code> con <code>this</code> → es <code>Clase.atributo</code>.</li>
+<li><code>if (h instanceof Suite)</code> en el recorrido → falta polimorfismo.</li>
+<li>Salida distinta por una tilde: "histórico" ≠ "historico", "Habitación" ≠ "Habitacion".</li>
+<li>Imprimir con <code>console.log</code> dentro de un método que debía <b>devolver</b> un valor.</li>
+<li>Usar <code>enum</code>, <code>any</code> o parameter properties → regla del examen rota.</li>
+<li><code>node archivo.ts</code> no verifica tipos: corré <code>npx tsc</code> siempre.</li></ol>`}
+],
+pat:[
+{h:"1. ¿Qué es un patrón y cuáles son las categorías?",html:`
+<p>Un <b>patrón de diseño</b> es una <b>solución probada y reutilizable a un problema recurrente</b> del diseño orientado a objetos. No es código para copiar: es una plantilla de cómo organizar clases, con un nombre que todos conocen. Vienen del libro <i>Design Patterns</i> (1994) de la <b>Gang of Four</b>: Gamma, Helm, Johnson y Vlissides.</p>
+<div class="mini"><table><thead><tr><th>Categoría</th><th>Se ocupa de…</th><th>Patrones de la materia</th></tr></thead><tbody>
+<tr><td><b>Creacionales</b></td><td><b>Cómo se crean</b> los objetos</td><td>Singleton, Factory Method</td></tr>
+<tr><td><b>Estructurales</b></td><td><b>Cómo se conectan</b> clases y objetos</td><td>Adapter</td></tr>
+<tr><td><b>Comportamentales</b></td><td><b>Cómo se comunican</b> y se reparten responsabilidades</td><td>Observer</td></tr></tbody></table></div>
+<div class="note"><b>Mnemotecnia</b> <b>crear</b> → creacional · <b>conectar</b> → estructural · <b>avisar / comunicar</b> → comportamental. El Observer es <b>comportamental</b>, no estructural (Tema A pregunta 7).</div>`},
+{h:"2. Singleton (creacional)",html:`
+<p><b>Problema</b>: que de una clase exista <b>una única instancia</b>, accesible desde cualquier lugar (configuración, conexión a la base, log central).</p>
+<pre class="code" data-code="pat-singleton"></pre>
+<h4>Las tres piezas</h4>
+<ol><li><b><code>private constructor</code></b>: para que <b>no se puedan crear instancias con <code>new</code> desde fuera de la clase</b> (Tema A pregunta 6).</li>
+<li><b><code>private static instancia</code></b>: <code>static</code> porque es de la clase; tipo <code>X | undefined</code> porque al principio no existe.</li>
+<li><b><code>static obtenerInstancia()</code></b>: <code>static</code> porque se llama <b>antes</b> de tener un objeto. Crea solo la primera vez (inicialización perezosa).</li></ol>
+<div class="cols"><div><h4>Ventajas</h4><ul><li>Control de recursos compartidos.</li><li>Evita crear objetos de más.</li><li>Acceso global controlado.</li></ul></div>
+<div><h4>Desventajas</h4><ul><li>Problemas en entornos concurrentes.</li><li><b>Dificulta las pruebas unitarias</b>.</li><li>Es estado global; puede violar SRP.</li></ul></div></div>
+<div class="note"><b>En el parcial</b> El valor (<code>costoEnvio = 1500</code>, <code>recargoExpress = 2500</code>) se declara <code>readonly</code> en el Singleton y las demás clases lo <b>leen</b> con <code>X.obtenerInstancia().valor</code>. Nunca escribas el número suelto en otra clase.</div>`},
+{h:"3. Factory Method (creacional)",html:`
+<p><b>Idea central</b>: <b>delegar la creación de objetos a una fábrica en lugar de usar <code>new</code> directamente</b> (Tema B pregunta 6). Quien usa los objetos solo conoce el tipo común.</p>
+<pre class="code" data-code="pat-factory"></pre>
+<h4>Cómo se reconoce</h4>
+<ol><li>Un <b>tipo común</b> (interfaz o clase abstracta) que es lo que la fábrica <b>devuelve</b>.</li>
+<li>Varias <b>clases concretas</b> que lo implementan.</li>
+<li>Un <b>método creador</b> (en el parcial, <code>static crear(tipo)</code>) con <code>if</code>/<code>switch</code>. Los <code>new</code> concretos <b>solo aparecen ahí</b>.</li>
+<li>El parámetro tipado con <b>unión de literales</b>: <code>"retiro" | "envio"</code>.</li></ol>
+<div class="cols"><div><h4>Ventajas</h4><ul><li>Separa crear de usar (SRP).</li><li>Agregar tipos sin tocar el código que los usa.</li><li>Centraliza los <code>new</code>.</li></ul></div>
+<div><h4>Desventajas</h4><ul><li><b>Más clases y más complejidad</b>.</li><li>La fábrica sí se toca al agregar un tipo (un <code>if</code> más).</li></ul></div></div>
+<div class="warn"><b>Error típico</b> Hacer <code>new PedidoEnvio()</code> en el bloque de prueba. La consigna dice "fuera de la fábrica nadie usa <code>new</code>". Usá siempre <code>FabricaPedidos.crear("envio")</code>.</div>`},
+{h:"4. Observer (comportamental)",html:`
+<p><b>Problema</b>: cuando un objeto <b>cambia de estado</b>, <b>varios otros</b> deben enterarse <b>sin que el primero sepa quiénes son</b>. Relación <b>uno a muchos</b>.</p>
+<pre class="code" data-code="pat-observer"></pre>
+<ul><li><b>Sujeto</b> (Subject): guarda una <b>lista de la interfaz</b> observador, con <code>suscribir</code>, <code>desuscribir</code> y <code>notificar</code>.</li>
+<li><b>Observador</b>: interfaz con un método (<code>actualizar</code>/<code>avisar</code>) que el sujeto llama.</li>
+<li><b>Observadores concretos</b>: deciden qué hacer.</li>
+<li>Se agregan observadores <b>sin tocar al sujeto</b> (OCP) y el sujeto depende de la interfaz (DIP).</li></ul>
+<div class="cols"><div><h4>Ventajas</h4><ul><li><b>Bajo acoplamiento</b> entre quien avisa y quien escucha.</li><li>Suscribir/desuscribir en ejecución.</li></ul></div>
+<div><h4>Desventajas</h4><ul><li><b>Notificaciones en cascada difíciles de seguir</b>.</li><li>Orden de aviso poco claro; fugas si nunca se desuscriben.</li></ul></div></div>
+<div class="note"><b>Regla de la materia</b> Se implementa a mano. Prohibido usar <code>EventEmitter</code> de Node.</div>`},
+{h:"5. Adapter (estructural)",html:`
+<p><b>Problema que resuelve</b>: <b>permite que dos interfaces incompatibles trabajen juntas</b> (Tema B pregunta 7). Tenés una clase que ya funciona pero con otra interfaz, y no la podés o no la querés modificar. Como un adaptador de enchufe.</p>
+<pre class="code" data-code="pat-adapter"></pre>
+<ol><li><b>Target</b>: la interfaz que espera el cliente.</li>
+<li><b>Adaptee</b>: la clase vieja. <b>No se modifica.</b></li>
+<li><b>Adapter</b>: <code>implements</code> el target, <b>contiene</b> al adaptee (composición) y <b>traduce</b> cada llamada. No reimplementa la lógica: delega.</li></ol>
+<div class="cols"><div><h4>Ventajas</h4><ul><li><b>Reutiliza sistemas viejos sin modificarlos</b>.</li><li>La traducción vive en un solo lugar.</li></ul></div>
+<div><h4>Desventajas</h4><ul><li><b>Agrega una capa extra</b>.</li><li>Si las interfaces son muy distintas, la traducción se complica.</li></ul></div></div>
+<div class="warn"><b>No confundir</b> "Controla que exista un único objeto que coordine el sistema" es el <b>Singleton</b>. "Notifica automáticamente a varios objetos" es el <b>Observer</b>.</div>`},
+{h:"6. Cómo reconocer un patrón en código ajeno",html:`
+<ol><li>¿<b>Constructor <code>private</code></b> + un <code>static</code> que devuelve la instancia? → <b>Singleton</b>.</li>
+<li>¿Un método que recibe un "tipo" y <b>devuelve distintas clases concretas</b> con un tipo de retorno común? → <b>Factory</b>.</li>
+<li>¿Una <b>lista de objetos de una interfaz</b> y un método que la recorre llamando al mismo método cuando algo cambia? → <b>Observer</b>.</li>
+<li>¿Una clase que <b>implementa una interfaz</b> y <b>guarda adentro un objeto de otra clase</b> con métodos de nombres distintos, y solo traduce? → <b>Adapter</b>.</li></ol>
+<div class="note"><b>Truco de múltiple opción</b> Las opciones incorrectas suelen ser <b>ventajas o desventajas de otro patrón</b>. Primero identificá el patrón y después elegí.</div>`},
+{h:"7. Patrones combinados y trampas",html:`
+<ul><li><b>Singleton + Factory</b> (parcial ejercicio 2): la clase creada por la fábrica lee el valor del Singleton.</li>
+<li><b>Observer + Adapter</b> (simulacro Cine): el adapter funciona como un observador más.</li></ul>
+<h4>Trampas</h4>
+<ol><li>"El constructor del Singleton es protected" → no, es <b>private</b>.</li>
+<li>"<code>obtenerInstancia</code> es de instancia" → no, es <b>static</b>.</li>
+<li>"Factory es estructural" → no, <b>creacional</b>.</li>
+<li>"El Adapter modifica la clase vieja" → justamente <b>no</b>.</li>
+<li>"El sujeto del Observer conoce cada observador concreto" → no, conoce la <b>interfaz</b>.</li>
+<li>Fábrica que devuelve la clase concreta (<code>crear(): PedidoEnvio</code>) → debe devolver el <b>tipo común</b>.</li>
+<li>Singleton con <code>instancia</code> pública → cualquiera la reemplaza.</li></ol>`}
+],
+solid:[
+{h:"1. Conceptos previos",html:`
+<p><b>SOLID</b> son cinco principios de diseño orientado a objetos popularizados por Robert C. Martin ("Uncle Bob"). El código que los viola <b>compila y funciona</b>: lo que logran es que sea fácil de cambiar, extender y probar.</p>
+<ul><li><b>Cohesión</b>: qué tan relacionadas están las cosas dentro de una clase. <b>Alta = bueno</b>.</li>
+<li><b>Acoplamiento</b>: cuánto depende una clase de otras. <b>Bajo = bueno</b>.</li>
+<li><b>Refactorizar</b>: cambiar la estructura interna <b>sin cambiar el comportamiento visible</b>. En el examen: <b>la salida antes y después es idéntica</b>.</li>
+<li><b>Code smell</b>: señal de mal diseño (un <code>switch</code> que crece, un <code>new</code> escondido, una clase gigante).</li></ul>`},
+{h:"2. S · Responsabilidad Única (SRP)",html:`
+<p><b>"Una clase debe tener una sola razón para cambiar."</b> Responsabilidad = motivo de cambio, no "un solo método".</p>
+<p><b>Señal</b>: una clase <b>valida, guarda y manda mails</b>. Tema A pregunta 8: "una clase User guarda sus datos en la base y además envía emails de bienvenida" → viola <b>SRP</b>.</p>
+<pre class="code" data-code="solid-srp"></pre>
+<p><b>Solución</b>: una clase por responsabilidad, coordinadas por <b>composición</b>. El servicio coordinador delega; no hace el trabajo.</p>`},
+{h:"3. O · Abierto/Cerrado (OCP)",html:`
+<p><b>"Abierto a la extensión, cerrado a la modificación."</b> Agregar comportamiento nuevo <b>sin modificar código que ya funciona y fue probado</b> (Tema B pregunta 8).</p>
+<p><b>Señal</b>: un <code>switch</code> o <code>if</code> que <b>crece con cada opción nueva</b>.</p>
+<pre class="code" data-code="solid-ocp"></pre>
+<p><b>Solución</b>: <b>interfaz común y una clase por opción</b>; la clase original recibe la interfaz y usa polimorfismo en vez del <code>if</code>.</p>
+<div class="note"><b>"Cerrado" no es "intocable"</b> Los bugs se corrigen igual. Significa que para agregar una opción no hay que tocarlo. Si queda un <code>switch</code>, que sea uno solo y aislado en una Factory.</div>`},
+{h:"4. L · Sustitución de Liskov (LSP)",html:`
+<p><b>"Los objetos de una subclase deben poder reemplazar a los de su clase base sin alterar el correcto funcionamiento del programa."</b> (Barbara Liskov, 1987). Tema B pregunta 9: "al reemplazar un objeto de la base por uno de su subclase el programa se comporta mal" → viola <b>LSP</b>.</p>
+<pre class="code" data-code="solid-lsp"></pre>
+<p>Una subclase <b>no puede</b>: exigir más (precondiciones más duras), garantizar menos, lanzar excepciones nuevas donde la base no lanzaba (<code>Pinguino.volar()</code> → <code>throw</code>), ni romper invariantes.</p>
+<p><b>Solución</b>: <b>sacar la herencia y usar un contrato común</b> (interfaz) que todos cumplan de verdad. "Es un" no alcanza: tiene que "<b>comportarse como</b> un".</p>`},
+{h:"5. I · Segregación de Interfaces (ISP)",html:`
+<p><b>"Los clientes no deberían depender de interfaces que no usan."</b> Mejor varias interfaces chicas que una gorda. Tema A pregunta 9: "una interfaz con muchos métodos obliga a una clase a implementar métodos que nunca usa" → viola <b>ISP</b>.</p>
+<pre class="code" data-code="solid-isp"></pre>
+<ul><li><b>Señal</b>: métodos que hacen <code>throw</code> o quedan vacíos porque no le corresponden.</li>
+<li><b>Solución</b>: partir en interfaces chicas; una clase implementa varias (<code>implements A, B, C</code>).</li>
+<li><b>ISP vs LSP</b>: si el problema es una <b>herencia</b> donde la hija no cumple lo del padre → LSP. Si es una <b>interfaz demasiado grande</b> → ISP. Muchas veces la misma corrección arregla los dos.</li></ul>`},
+{h:"6. D · Inversión de Dependencias (DIP)",html:`
+<p><b>"Los módulos de alto nivel no deben depender de módulos de bajo nivel. Ambos deben depender de abstracciones."</b> Las clases dependen de <b>abstracciones, no de implementaciones concretas</b> (Tema A pregunta 10).</p>
+<p><b>Señal</b>: un <b><code>new</code> de una clase concreta dentro de otra clase</b> ("la clase crea su propia dependencia").</p>
+<pre class="code" data-code="solid-dip"></pre>
+<ul><li><b>¿Por qué "inversión"?</b> Antes: Servicio → ArchivoLog. Después: Servicio → <code>Registro</code> ← ArchivoLog. La flecha del detalle apunta hacia la abstracción.</li>
+<li><b>Ventaja concreta</b> (Tema B pregunta 10): <b>facilita cambiar implementaciones</b>, por ejemplo para testear con <i>mocks</i> o cambiar de proveedor. No hace el programa más rápido.</li>
+<li><b>DIP</b> es el principio; <b>DI</b> (inyección por constructor) es la técnica; el <b>composition root</b> es el único lugar donde se hacen los <code>new</code> (el bloque de prueba).</li>
+<li>No todo <code>new</code> viola DIP: <code>new Date()</code> o un arreglo están bien. Importa depender de un <b>servicio o infraestructura</b> concreta.</li></ul>`},
+{h:"7. Tabla de señales y frases de consigna",html:`
+<div class="mini"><table><thead><tr><th>Principio</th><th>Señal</th><th>Solución</th></tr></thead><tbody>
+<tr><td><b>SRP</b></td><td>Una clase valida, guarda y manda mails</td><td>Una clase por responsabilidad</td></tr>
+<tr><td><b>OCP</b></td><td><code>switch</code>/<code>if</code> que crece con cada opción</td><td>Interfaz común + una clase por opción</td></tr>
+<tr><td><b>LSP</b></td><td>La subclase cambia lo que esperaba la base</td><td>Sacar la herencia; contrato común</td></tr>
+<tr><td><b>ISP</b></td><td>Métodos con <code>throw</code> porque no corresponden</td><td>Interfaces chicas</td></tr>
+<tr><td><b>DIP</b></td><td><code>new</code> de una clase concreta adentro</td><td>Recibir una interfaz por constructor</td></tr></tbody></table></div>
+<ul><li>"cada opción nueva obliga a agregar otro <code>if</code>" → <b>OCP</b></li>
+<li>"la clase crea su propia dependencia concreta" → <b>DIP</b></li>
+<li>"hace demasiadas cosas / varios motivos para cambiar" → <b>SRP</b></li>
+<li>"la subclase rompe lo que esperaba la función" → <b>LSP</b></li>
+<li>"obligada a implementar métodos que no usa" → <b>ISP</b></li>
+<li>"agregar un comportamiento sin modificar código probado" → <b>OCP</b></li></ul>`},
+{h:"8. SOLID y los patrones",html:`
+<ul><li><b>Factory</b> ayuda a SRP (separa crear de usar), OCP y DIP (el cliente depende del tipo común).</li>
+<li><b>Observer</b> ayuda a OCP (nuevo observador sin tocar el sujeto) y DIP (el sujeto depende de la interfaz).</li>
+<li><b>Adapter</b> ayuda a SRP (la traducción en un lugar) y OCP (integra lo viejo sin modificarlo).</li>
+<li><b>Singleton</b>: ojo, puede <b>violar SRP</b> y esconder dependencias (contra DIP).</li></ul>`},
+{h:"9. Receta para el ejercicio 3 (refactor)",html:`
+<ol><li><b>Copiá el código original</b> en <code>src/ejercicio3.ts</code>, ejecutalo y guardá la salida.</li>
+<li><b>Commit</b> <code>chore(ej3): código original</code> <b>antes de tocar nada</b>.</li>
+<li>Identificá la señal y nombrá el principio (casi siempre <b>OCP + DIP</b>).</li>
+<li><b>OCP</b>: creá la interfaz de las opciones (<code>MedioDePago</code>, <code>Canal</code>) y una clase por opción. El método recibe la interfaz y <b>no tiene ningún <code>if</code></b>.</li>
+<li><b>DIP</b>: creá la interfaz de la dependencia (<code>Repositorio</code>, <code>Registro</code>) con sus dos implementaciones. La clase la recibe <b>por constructor</b> y la guarda en un atributo <code>private</code>.</li>
+<li><b>Comentario de una línea arriba de cada interfaz nueva</b>: <code>// OCP: ...</code> y <code>// DIP: ...</code>.</li>
+<li>Mové los <code>new</code> al bloque de prueba (composition root).</li>
+<li>Ejecutá y compará la salida <b>carácter por carácter</b>. <code>npx tsc</code> limpio.</li>
+<li><b>Commit</b> <code>refactor(ej3): ejercicio 3 completo</code>.</li></ol>
+<div class="warn"><b>Error que ya te pasó</b> No envuelvas la llamada a la dependencia en otro <code>console.log</code>: si <code>escribir()</code> ya imprime y devuelve <code>void</code>, vas a ver <code>undefined</code> en la salida.</div>`}
+],
+exam:[
+{h:"1. Qué se toma en el recuperatorio",html:`
+<p>Según el aviso del profe, la práctica del recuperatorio del 1er parcial es <b>similar a los anteriores</b>: <b>3 ejercicios</b>.</p>
+<ol><li><b>POO</b>: clase abstracta, herencia, polimorfismo, <code>readonly</code>, <code>private</code>, <code>static</code>, getter (Estacionamiento / Hotel).</li>
+<li><b>Patrones de diseño</b>: interfaz + Singleton + Factory Method (Local de comidas / Envíos). Puede aparecer Observer o Adapter.</li>
+<li><b>Principios SOLID</b>: refactor de un código que funciona, casi siempre OCP + DIP (Cobros / Notificaciones).</li></ol>
+<ul><li><b>Teoría</b> (40 %): 10 preguntas de opción múltiple, 1 hora. <b>Se aprueba con 6</b>. Si no aprobás la teoría, <b>la práctica no se corrige</b>.</li>
+<li><b>Práctica</b> (60 %): 1,5 horas en la PC. <b>Se aprueba resolviendo bien 2 de 3</b>.</li></ul>`},
+{h:"2. Armar el proyecto (minuto 0 a 5)",html:`
+<pre class="code" data-code="exam-setup"></pre>
+<p><code>tsconfig.json</code> con las opciones exactas de la consigna:</p>
+<pre class="code" data-code="exam-tsconfig"></pre>
+<ul><li><code>.gitignore</code> con la línea <code>node_modules/</code>.</li>
+<li><code>ENTREGA.md</code> con apellido, nombre, DNI, tema y URL del repositorio.</li>
+<li>Estructura: <code>src/ejercicio1.ts</code>, <code>src/ejercicio2.ts</code>, <code>src/ejercicio3.ts</code>.</li></ul>`},
+{h:"3. Git: puntos de control",html:`
+<p>Repositorio <b>privado</b> <code>parcial-tlp4-apellido</code> con los <b>cuatro profesores</b> como colaboradores (Settings → Collaborators). Si es público o falta alguno, no se corrige.</p>
+<div class="mini"><table><thead><tr><th>#</th><th>Momento</th><th>Mensaje exacto</th></tr></thead><tbody>
+<tr><td>0</td><td>Proyecto configurado y <code>npx tsc</code> corriendo</td><td><code>chore: configuración inicial</code></td></tr>
+<tr><td>1</td><td>Ejercicio 1 terminado</td><td><code>feat(ej1): ejercicio 1 completo</code></td></tr>
+<tr><td>2</td><td>Ejercicio 2 terminado</td><td><code>feat(ej2): ejercicio 2 completo</code></td></tr>
+<tr><td>3</td><td>Original del ej. 3, antes de refactorizar</td><td><code>chore(ej3): código original</code></td></tr>
+<tr><td>4</td><td>Ejercicio 3 terminado</td><td><code>refactor(ej3): ejercicio 3 completo</code></td></tr>
+<tr><td>5</td><td><code>ENTREGA.md</code> final</td><td><code>docs: entrega final</code></td></tr></tbody></table></div>
+<pre class="code" data-code="exam-git"></pre>
+<div class="warn"><b>Sin commit, no existe</b> Un ejercicio sin su commit de control se considera no entregado. Solo cuenta lo que está en <code>main</code> en GitHub antes de la hora.</div>`},
+{h:"4. Estrategia de 90 minutos",html:`
+<div class="mini"><table><thead><tr><th>Minutos</th><th>Qué hacer</th></tr></thead><tbody>
+<tr><td>0–5</td><td>Proyecto + <code>npx tsc</code> + commit 0</td></tr>
+<tr><td>5–10</td><td>Leer los <b>tres</b> enunciados. Empezar por el que más seguro te sale</td></tr>
+<tr><td>10–35</td><td>Primer ejercicio → probar → commit</td></tr>
+<tr><td>35–60</td><td>Segundo ejercicio → probar → commit</td></tr>
+<tr><td>60–80</td><td>Tercero (o completar el que falte)</td></tr>
+<tr><td>80–90</td><td><code>npx tsc</code>, comparar salidas, <code>ENTREGA.md</code>, commit final y push</td></tr></tbody></table></div>
+<div class="note"><b>Prioridad</b> Mejor <b>2 completos y prolijos</b> que 3 a medias. El ejercicio 2 (Singleton + Factory) es casi siempre igual: es el más rápido de asegurar.</div>`},
+{h:"5. Diccionario: frase de la consigna → código",html:`
+<div class="mini"><table><thead><tr><th>Frase</th><th>Lo que escribís</th></tr></thead><tbody>
+<tr><td>"clase abstracta X con método abstracto y()"</td><td><code>abstract class X { abstract y(): T; }</code></td></tr>
+<tr><td>"<code>patente</code> readonly, se recibe en el constructor"</td><td><code>readonly patente: string;</code> + asignar en el constructor</td></tr>
+<tr><td>"arreglo privado"</td><td><code>private lista: X[] = [];</code></td></tr>
+<tr><td>"atributo static que cuente…"</td><td><code>static total = 0;</code> y <code>Clase.total++</code></td></tr>
+<tr><td>"getter <code>cantidad</code>"</td><td><code>get cantidad(): number { return this.lista.length; }</code></td></tr>
+<tr><td>"sin <code>if</code> por tipo"</td><td>Polimorfismo: llamar al método de cada objeto</td></tr>
+<tr><td>"Singleton X"</td><td><code>private static instancia</code> + <code>private constructor</code> + <code>static obtenerInstancia()</code></td></tr>
+<tr><td>"leído del Singleton"</td><td><code>X.obtenerInstancia().valor</code>, nunca el número suelto</td></tr>
+<tr><td>"Factory con <code>crear(tipo: "a" | "b")</code>"</td><td><code>static crear(tipo: "a" | "b"): Interfaz</code></td></tr>
+<tr><td>"fuera de la fábrica nadie usa <code>new</code>"</td><td>En el bloque de prueba solo <code>Fabrica.crear(...)</code></td></tr>
+<tr><td>"cada opción nueva agrega otro <code>if</code>"</td><td>OCP: interfaz + una clase por opción</td></tr>
+<tr><td>"la clase crea su propia dependencia"</td><td>DIP: interfaz + recibir por constructor</td></tr>
+<tr><td>"comentario arriba de cada interfaz"</td><td><code>// OCP: ...</code> / <code>// DIP: ...</code></td></tr></tbody></table></div>`},
+{h:"6. Errores que más puntos cuestan",html:`
+<ol><li><b>Salida distinta</b> por una tilde, un espacio o un <code>$</code>: copiá los textos de la consigna.</li>
+<li>Olvidar el <b>commit del original</b> antes del refactor.</li>
+<li><b>Parameter properties</b> por costumbre: con <code>erasableSyntaxOnly</code> no compila.</li>
+<li><code>enum</code> para los tipos de la fábrica.</li>
+<li><code>instanceof</code> en el recorrido polimórfico.</li>
+<li>El número escrito a mano en vez de leerlo del Singleton.</li>
+<li><code>new</code> de una clase concreta fuera de la fábrica.</li>
+<li>Falta el <b>comentario del principio</b> arriba de cada interfaz del ej. 3.</li>
+<li><code>this.total</code> en vez de <code>Clase.total</code>.</li>
+<li>Entregar sin correr <code>npx tsc</code>.</li></ol>`},
+{h:"7. Revisión de tu parcial (Tema B)",html:`
+<p><b>Teoría: 5 de 10.</b> Hacían falta 6, por eso la práctica no se corrigió. Los cinco errores son todos de <b>identificar el concepto por su descripción</b>:</p>
+<div class="mini"><table><thead><tr><th>#</th><th>Pregunta</th><th>Marcaste</th><th>Correcta</th></tr></thead><tbody>
+<tr><td>3</td><td>Un atributo <code>static</code>…</td><td class="badc">a) es de cada instancia</td><td class="okc">b) pertenece a la clase y es compartido</td></tr>
+<tr><td>5</td><td>Cada empleado responde <code>calcularSueldo()</code> a su manera</td><td class="badc">a) Encapsulamiento</td><td class="okc">c) Polimorfismo</td></tr>
+<tr><td>7</td><td>¿Qué resuelve el Adapter?</td><td class="badc">c) Un único objeto coordinador (eso es Singleton)</td><td class="okc">a) Que interfaces incompatibles trabajen juntas</td></tr>
+<tr><td>8</td><td>Agregar comportamiento sin modificar código probado</td><td class="badc">a) SRP</td><td class="okc">c) OCP</td></tr>
+<tr><td>9</td><td>La subclase rompe el programa al reemplazar a la base</td><td class="badc">c) DIP</td><td class="okc">b) LSP</td></tr></tbody></table></div>
+<p>Bien: 1 (versión local), 2 (<code>noEmit</code>), 4 (<code>readonly</code>), 6 (Factory), 10 (abstracciones).</p>
+<h4>Práctica (lo que tenías en el repo)</h4>
+<ul><li><b>Ejercicio 1</b>: bien resuelto. Detalle: los dos <code>console.log</code> de totales estaban adentro de <code>mostrarPrecios</code>; mejor dejarlos en el bloque de prueba, como pide la consigna.</li>
+<li><b>Ejercicio 2</b>: el archivo estaba vacío. Es el ejercicio más mecánico: practicalo hasta escribirlo en 15 minutos.</li>
+<li><b>Ejercicio 3</b>: la estructura OCP + DIP estaba bien, pero faltaban los comentarios de principio y la salida imprimía <code>undefined</code>:</li></ul>
+<pre class="code" data-code="tu-bug"></pre>
+<div class="note"><b>Plan</b> En el Quiz usá "Preguntas reales de los parciales" hasta sacar 20/20, y en Práctica resolvé los cuatro exámenes con el cronómetro.</div>`}
+]
+};
+
+/* ---------------- FLASHCARDS ---------------- */
+const CARDS = [
+// POO
+["poo","¿Qué significa el flag <code>-D</code> en <code>npm i -D typescript</code>?","Que TypeScript queda como <b>dependencia de desarrollo</b> (<code>devDependencies</code>)."],
+["poo","¿Cuál es la ventaja de instalar TypeScript local?","Cada proyecto <b>fija su propia versión</b>, sin depender de lo instalado en la máquina. Se usa con <code>npx tsc</code>."],
+["poo","¿Qué hace <code>noEmit: true</code>?","<code>tsc</code> <b>solo verifica los tipos</b>, sin generar archivos <code>.js</code>."],
+["poo","¿Qué pasa con <code>node archivo.ts</code> si hay un error de tipos?","<b>Lo ejecuta igual</b>: Node solo borra las anotaciones de tipo, no las verifica. El que verifica es <code>tsc</code>."],
+["poo","¿Por qué no compila <code>constructor(private x: string)</code> en el parcial?","Con <code>erasableSyntaxOnly</code> solo vale sintaxis borrable; un parameter property genera código. Además está prohibido: forma larga."],
+["poo","¿Cómo reemplazás un <code>enum</code>?","Con una <b>unión de literales</b>: <code>type Tipo = \"a\" | \"b\"</code>."],
+["poo","¿Qué usás en vez de <code>any</code>?","<code>unknown</code>, y antes de usarlo lo comprobás (<code>typeof</code>, <code>instanceof</code>): narrowing."],
+["poo","Tres instancias de la misma clase: ¿qué varía entre ellas?","El <b>estado</b>: los valores de sus atributos. Métodos y constructor son los mismos."],
+["poo","¿Qué es la abstracción?","Modelar <b>solo lo relevante</b> para el problema y ocultar el «cómo» detrás de un nombre claro."],
+["poo","¿Qué es el encapsulamiento?","El objeto <b>protege su estado</b>: desde afuera solo se modifica por métodos que validan (<code>private</code>)."],
+["poo","¿Qué es la herencia?","Una subclase reutiliza y extiende a una superclase (<code>extends</code>). Relación <b>«es un»</b>."],
+["poo","¿Qué es el polimorfismo?","El <b>mismo mensaje</b> produce <b>distinto comportamiento</b> según el objeto real. Sin <code>if</code> por tipo."],
+["poo","¿Desde dónde se accede a un atributo <code>protected</code>?","Desde la propia clase y sus subclases, <b>no desde afuera</b>."],
+["poo","¿Qué significa <code>static</code>?","Pertenece a la <b>clase</b> y es <b>compartido por todas las instancias</b>. Se usa <code>Clase.miembro</code>."],
+["poo","¿Qué impide <code>readonly</code>?","Que se <b>reasigne después del constructor</b>, incluso desde dentro de la clase. Se puede leer."],
+["poo","¿Cuándo es obligatorio <code>super(...)</code>?","Cuando la hija declara constructor; va <b>antes de usar <code>this</code></b>."],
+["poo","Clase abstracta: tres características","Puede tener código y estado, tiene métodos <code>abstract</code> que las hijas deben implementar, y <b>no se instancia</b>."],
+["poo","Interface: tres características","Contrato puro (sin código ni estado), una clase implementa <b>varias</b>, desaparece al ejecutar."],
+["poo","Override vs overload","<b>Override</b>: la hija redefine un método heredado. <b>Overload</b>: varias firmas del mismo nombre en la misma clase."],
+["poo","¿Por qué el setter no puede llamarse igual que el atributo?","Porque se llamaría a sí mismo infinitamente. El atributo va con otro nombre: <code>_edad</code>."],
+["poo","Un Auto tiene un Motor: ¿cómo se modela?","<b>Composición</b>: el Auto guarda una instancia de Motor como atributo. No es herencia."],
+["poo","<code>Hotel.totalCheckIns</code> vs <code>hotel.cantidad</code>","El static cuenta el <b>total histórico</b> de la clase; el getter cuenta cuántas hay <b>ahora</b> en ese hotel."],
+["poo","¿Qué tipo tiene <code>e</code> en un <code>catch</code> con strict?","<code>unknown</code>: preguntá <code>e instanceof Error</code> antes de usar <code>e.message</code>."],
+["poo","¿Qué es una copia defensiva?","Devolver <code>[...this.lista]</code> en vez de la referencia real, para que no te modifiquen el estado interno."],
+// PATRONES
+["pat","¿Qué es un patrón de diseño?","Una <b>solución probada y reutilizable</b> a un problema recurrente de diseño. Viene del libro de la Gang of Four (1994)."],
+["pat","Las tres categorías de patrones","<b>Creacionales</b> (crear), <b>Estructurales</b> (conectar), <b>Comportamentales</b> (comunicar)."],
+["pat","Categoría de Singleton, Factory, Observer y Adapter","Singleton y Factory: <b>creacionales</b>. Adapter: <b>estructural</b>. Observer: <b>comportamental</b>."],
+["pat","Las tres piezas del Singleton","<code>private constructor</code>, <code>private static instancia</code> y <code>static obtenerInstancia()</code>."],
+["pat","¿Por qué el constructor del Singleton es private?","Para que <b>no se puedan crear instancias con <code>new</code> desde afuera</b>."],
+["pat","¿Por qué <code>obtenerInstancia()</code> es static?","Porque se llama <b>antes</b> de que exista un objeto."],
+["pat","Ventaja y desventaja del Singleton","Ventaja: control de recursos compartidos. Desventaja: <b>dificulta las pruebas unitarias</b> y da problemas de concurrencia."],
+["pat","Idea central del Factory Method","<b>Delegar la creación de objetos a una fábrica</b> en lugar de usar <code>new</code> directamente."],
+["pat","¿Qué devuelve la fábrica?","El <b>tipo común</b> (interfaz o clase abstracta), nunca la clase concreta."],
+["pat","Ventaja y desventaja del Factory","Ventaja: separa crear de usar y permite agregar tipos. Desventaja: <b>más clases y complejidad</b>."],
+["pat","¿Qué problema resuelve el Observer?","Avisar a <b>varios objetos</b> cuando uno cambia, sin que el sujeto sepa quiénes son. Uno a muchos."],
+["pat","Piezas del Observer","Interfaz observador, observadores concretos y un sujeto con lista de la interfaz + suscribir / desuscribir / notificar."],
+["pat","Ventaja y desventaja del Observer","Ventaja: <b>bajo acoplamiento</b>. Desventaja: <b>notificaciones en cascada difíciles de seguir</b>."],
+["pat","¿Qué problema resuelve el Adapter?","Que <b>dos interfaces incompatibles trabajen juntas</b> sin modificar la clase vieja."],
+["pat","Piezas del Adapter","<b>Target</b> (interfaz esperada), <b>Adaptee</b> (clase vieja, no se toca), <b>Adapter</b> (implementa el target, contiene al adaptee y traduce)."],
+["pat","Ventaja y desventaja del Adapter","Ventaja: <b>reutiliza sistemas viejos sin modificarlos</b>. Desventaja: <b>agrega una capa extra</b>."],
+["pat","¿Qué está prohibido para implementar el Observer?","Usar <code>EventEmitter</code> de Node. Se implementa a mano."],
+// SOLID
+["solid","¿Qué dice SRP?","Una clase debe tener <b>una sola razón para cambiar</b>."],
+["solid","Señal y solución de SRP","Señal: una clase valida, guarda y manda mails. Solución: una clase por responsabilidad, coordinadas por composición."],
+["solid","¿Qué dice OCP?","Abierto a la <b>extensión</b>, cerrado a la <b>modificación</b>: agregar comportamiento sin tocar código probado."],
+["solid","Señal y solución de OCP","Señal: <code>if</code>/<code>switch</code> que crece con cada opción. Solución: interfaz común + una clase por opción."],
+["solid","¿Qué dice LSP?","Una subclase debe poder <b>reemplazar a su base</b> sin romper el programa."],
+["solid","Señal y solución de LSP","Señal: la subclase cambia lo que esperaba la base (cuadrado/rectángulo, pingüino que no vuela). Solución: sacar la herencia, contrato común."],
+["solid","¿Qué dice ISP?","Los clientes no deben depender de <b>interfaces que no usan</b>. Interfaces chicas."],
+["solid","Señal y solución de ISP","Señal: métodos con <code>throw</code> porque no corresponden. Solución: partir la interfaz."],
+["solid","¿Qué dice DIP?","Alto y bajo nivel dependen de <b>abstracciones</b>, no de implementaciones concretas."],
+["solid","Señal y solución de DIP","Señal: un <code>new</code> de una clase concreta dentro de otra. Solución: interfaz recibida por constructor."],
+["solid","Ventaja concreta de depender de abstracciones","Cambiar implementaciones fácilmente: <b>testear con mocks</b> o cambiar de proveedor."],
+["solid","DIP vs DI","DIP es el <b>principio</b> (depender de abstracciones). DI es la <b>técnica</b> (pasar dependencias desde afuera)."],
+["solid","¿Qué es refactorizar?","Cambiar la estructura interna <b>sin cambiar el comportamiento visible</b>: la salida es idéntica."],
+["solid","¿Qué es el composition root?","El <b>único lugar</b> donde se hacen los <code>new</code> y se conectan las piezas (el bloque de prueba)."],
+["solid","Alta cohesión / bajo acoplamiento","Cohesión: todo en la clase apunta a un propósito. Acoplamiento: cuánto depende de otras. Queremos alta y bajo."],
+// EXAMEN
+["exam","¿Cómo se aprueba la teoría?","10 preguntas de opción múltiple, <b>6 correctas</b>. Si no aprobás, la práctica no se corrige."],
+["exam","¿Cómo se aprueba la práctica?","Resolviendo bien <b>2 de los 3</b> ejercicios, con su commit de control antes de la hora."],
+["exam","¿Qué tiene cada ejercicio del recuperatorio?","1: POO. 2: patrones (Singleton + Factory). 3: refactor SOLID (OCP + DIP)."],
+["exam","Mensaje del commit antes de refactorizar","<code>chore(ej3): código original</code>"],
+["exam","Mensaje del commit del refactor","<code>refactor(ej3): ejercicio 3 completo</code>"],
+["exam","Primer commit del parcial","<code>chore: configuración inicial</code>, con el proyecto armado y <code>npx tsc</code> corriendo."],
+["exam","¿Qué va en el <code>.gitignore</code>?","<code>node_modules/</code>"],
+["exam","¿Qué pide el ejercicio 3 arriba de cada interfaz nueva?","Un comentario de una línea con el principio: <code>// OCP: ...</code>, <code>// DIP: ...</code>."],
+["exam","¿Cuándo un ejercicio está bien resuelto?","<code>npx tsc</code> limpio, corre sin errores, cumple todo, <b>salida idéntica</b> y commit en GitHub a tiempo."]
+];
+
+/* ---------------- QUIZ ---------------- */
+/* src: "A" o "B" = pregunta real de la teoría de ese tema */
+const QUIZ = [
+// ===== REALES TEMA A =====
+{u:"poo",src:"A",q:"En el comando <code>npm i -D typescript</code>, ¿qué indica el flag <code>-D</code>?",o:["Que TypeScript se instala de forma global en la máquina","Que TypeScript queda como dependencia de desarrollo","Que se descarga la versión más reciente en modo de prueba"],a:1,e:"<code>-D</code> = <code>--save-dev</code>: queda en <code>devDependencies</code>. Global sería <code>-g</code>."},
+{u:"poo",src:"A",q:"Si un archivo .ts tiene un error de tipos y se ejecuta con <code>node archivo.ts</code>, ¿qué ocurre?",o:["Node lo ejecuta igual, porque solo borra las anotaciones de tipo sin verificarlas","Node detiene la ejecución y muestra el error de tipos","Node corrige automáticamente el tipo incorrecto antes de ejecutar"],a:0,e:"Node hace <i>type stripping</i>: borra los tipos y ejecuta. Quien detecta errores de tipo es <code>npx tsc</code>."},
+{u:"poo",src:"A",q:"Si se crean tres instancias de la misma clase, ¿qué es lo que puede variar entre ellas?",o:["La implementación de sus métodos","El constructor que utiliza cada una","El estado, es decir, los valores de sus atributos"],a:2,e:"La clase es el molde: métodos y constructor son los mismos. Cada objeto tiene sus propios valores."},
+{u:"poo",src:"A",q:"Un atributo declarado como <code>protected</code> es accesible desde:",o:["Cualquier parte del programa","Únicamente la propia clase donde se declaró","La propia clase y sus subclases, pero no desde afuera"],a:2,e:"Cualquier parte = public. Solo la clase = private."},
+{u:"poo",src:"A",q:"Un Auto tiene un Motor. ¿Cuál es la forma correcta de modelar esta relación?",o:["Herencia: Auto extends Motor","Composición: el Auto guarda una instancia de Motor como atributo","Herencia inversa: Motor extends Auto"],a:1,e:"\"Tiene un\" = composición. Herencia es \"es un\", y un auto no es un motor."},
+{u:"pat",src:"A",q:"En el patrón Singleton, ¿por qué el constructor se declara private?",o:["Para que no se puedan crear instancias con new desde fuera de la clase","Para que la creación del objeto sea más rápida","Para que las subclases puedan heredarlo sin modificarlo"],a:0,e:"Es lo que garantiza que la única forma de obtener el objeto sea <code>obtenerInstancia()</code>."},
+{u:"pat",src:"A",q:"El patrón Observer, ¿a qué categoría de patrones pertenece?",o:["Creacional","Estructural","Comportamental"],a:2,e:"Se ocupa de cómo se <b>comunican</b> los objetos (avisar). Estructural es el Adapter."},
+{u:"solid",src:"A",q:"Una clase User guarda sus datos en la base de datos y además envía emails de bienvenida. ¿Qué principio SOLID viola?",o:["Responsabilidad Única (SRP)","Sustitución de Liskov (LSP)","Segregación de Interfaz (ISP)"],a:0,e:"Tiene dos motivos para cambiar: la persistencia y el envío de mails."},
+{u:"solid",src:"A",q:"Una interfaz con muchos métodos obliga a una clase a implementar métodos que nunca usa. ¿Qué principio se está violando?",o:["Inversión de Dependencia (DIP)","Segregación de Interfaz (ISP)","Abierto/Cerrado (OCP)"],a:1,e:"ISP: interfaces chicas; nadie debe depender de lo que no usa."},
+{u:"solid",src:"A",q:"Según el Principio de Inversión de Dependencia, las clases deben depender de:",o:["Implementaciones concretas, para saber exactamente qué hace cada una","Abstracciones, y no de implementaciones concretas","Clases base, a través de herencia"],a:1,e:"Depender de interfaces permite cambiar la implementación sin tocar la clase."},
+// ===== REALES TEMA B =====
+{u:"poo",src:"B",q:"¿Cuál es la principal ventaja de instalar TypeScript de forma local en el proyecto?",o:["Cada proyecto fija su propia versión, sin depender de lo instalado en la máquina","Permite usar el comando tsc directamente, sin npx","Evita que se cree la carpeta node_modules/"],a:0,e:"Local = versión fija por proyecto. Justamente por ser local hay que usar <code>npx tsc</code>, y sí crea <code>node_modules/</code>."},
+{u:"poo",src:"B",q:"En el tsconfig.json, ¿qué hace la opción <code>noEmit: true</code>?",o:["Desactiva todos los mensajes de error del compilador","Impide que el archivo se pueda ejecutar con node","Hace que tsc solo verifique los tipos, sin generar archivos .js"],a:2,e:"No emite salida: solo chequea."},
+{u:"poo",src:"B",q:"Un atributo declarado como <code>static</code>:",o:["Pertenece a cada instancia por separado","Pertenece a la clase y es compartido por todas sus instancias","No puede modificarse una vez asignado"],a:1,e:"\"No puede modificarse\" describe a <code>readonly</code>. <code>static</code> es de la clase (<code>Hotel.totalCheckIns</code>)."},
+{u:"poo",src:"B",q:"¿Qué impide el modificador <code>readonly</code> en una propiedad?",o:["Que se reasigne después del constructor, incluso desde dentro de la clase","Que se lea desde fuera de la clase","Que las subclases hereden esa propiedad"],a:0,e:"Se asigna una vez (al declarar o en el constructor) y se puede leer libremente."},
+{u:"poo",src:"B",q:"Se recorre una lista de Empleado llamando a <code>calcularSueldo()</code> y cada objeto responde con su propio cálculo, sin que el código sepa de qué tipo es cada uno. ¿Qué pilar de la POO se aplica?",o:["Encapsulamiento","Abstracción","Polimorfismo"],a:2,e:"Mismo mensaje, distinto comportamiento según el objeto real = polimorfismo."},
+{u:"pat",src:"B",q:"¿Cuál es la idea central del patrón Factory Method?",o:["Asegurar que una clase tenga una única instancia","Delegar la creación de objetos a una fábrica en lugar de usar new directamente","Permitir que dos interfaces incompatibles trabajen juntas"],a:1,e:"La a) es Singleton y la c) es Adapter."},
+{u:"pat",src:"B",q:"¿Qué problema resuelve el patrón Adaptador?",o:["Permite que dos interfaces incompatibles trabajen juntas","Notifica automáticamente a varios objetos cuando otro cambia de estado","Controla que exista un único objeto que coordine el sistema"],a:0,e:"La b) es Observer y la c) es Singleton."},
+{u:"solid",src:"B",q:"Se necesita agregar un nuevo tipo de comportamiento sin modificar código que ya funciona y fue probado. ¿Qué principio SOLID lo plantea?",o:["Responsabilidad Única (SRP)","Sustitución de Liskov (LSP)","Abierto/Cerrado (OCP)"],a:2,e:"Abierto a la extensión, cerrado a la modificación."},
+{u:"solid",src:"B",q:"Si al reemplazar un objeto de la clase base por uno de su subclase el programa empieza a comportarse de forma incorrecta, ¿qué principio se viola?",o:["Segregación de Interfaz (ISP)","Sustitución de Liskov (LSP)","Inversión de Dependencia (DIP)"],a:1,e:"Liskov habla exactamente de sustituir la base por la subclase."},
+{u:"solid",src:"B",q:"¿Qué ventaja concreta da depender de abstracciones en lugar de clases concretas?",o:["Facilita cambiar implementaciones, por ejemplo para testear con mocks o cambiar de proveedor","Hace que el programa se ejecute más rápido","Elimina la necesidad de usar interfaces"],a:0,e:"Es la razón práctica del DIP."},
+// ===== POO =====
+{u:"poo",q:"¿Qué pasa si una subclase con constructor usa <code>this</code> antes de llamar a <code>super()</code>?",o:["Error de compilación","Se llama a super automáticamente","this queda undefined y sigue","Funciona igual"],a:0,e:"\"'super' must be called before accessing 'this'\"."},
+{u:"poo",q:"Si el padre declara <code>nombre</code> como <code>private</code>, ¿la hija puede leer <code>this.nombre</code>?",o:["No: hay que declararlo protected","Sí, siempre","Solo si es readonly","Solo con override"],a:0,e:"private = solo la propia clase."},
+{u:"poo",q:"Si <code>enum</code> está prohibido, ¿cómo representás un conjunto fijo de opciones?",o:["Una unión de literales como \"retiro\" | \"envio\"","Un parámetro any","Un arreglo de any","Una clase abstracta vacía"],a:0,e:"Un valor mal escrito no compila, igual que con un enum."},
+{u:"poo",q:"¿Cuál es la diferencia entre abstracción y encapsulamiento?",o:["Abstracción: qué modelo y muestro; encapsulamiento: cómo protejo el estado","Son lo mismo","Abstracción es usar private; encapsulamiento es usar abstract","Abstracción es heredar"],a:0,e:"Pregunta clásica de teoría."},
+{u:"poo",q:"¿Qué se puede hacer con una clase abstracta?",o:["Tener métodos con código y métodos abstractos, pero no instanciarla","Instanciarla con new","Extender varias a la vez","Solo declarar firmas, sin código"],a:0,e:"Es un molde parcial."},
+{u:"poo",q:"¿Cuántas clases puede extender y cuántas interfaces puede implementar una clase?",o:["Una clase; varias interfaces","Varias clases; una interfaz","Una y una","Ninguna restricción"],a:0,e:"Herencia simple, implementación múltiple."},
+{u:"poo",q:"¿Cómo se accede a un atributo static dentro de un método de instancia?",o:["Con el nombre de la clase: Hotel.totalCheckIns","Con this.totalCheckIns","Con super.totalCheckIns","No se puede"],a:0,e:"El static es de la clase, no del objeto."},
+{u:"poo",q:"Un setter <code>set edad(v)</code> asigna <code>this.edad = v</code>. ¿Qué pasa?",o:["Se llama a sí mismo infinitamente (stack overflow)","Funciona normalmente","El atributo pasa a ser readonly","Error de compilación siempre"],a:0,e:"El atributo de respaldo debe llamarse distinto: <code>_edad</code>."},
+{u:"poo",q:"Override vs overload:",o:["Override: la hija redefine un método heredado; overload: varias firmas del mismo nombre en la misma clase","Son sinónimos","Override solo existe en interfaces","Overload es redefinir en la hija"],a:0,e:"Sobrescritura vs sobrecarga."},
+{u:"poo",q:"¿Cuál es la señal de que usaste bien el polimorfismo en <code>mostrarPrecios</code>?",o:["No hay ningún if/switch/instanceof preguntando el tipo","Hay un instanceof por cada subclase","Todas las clases son static","Se usa any para recorrer"],a:0,e:"Cada objeto responde con su propia versión."},
+{u:"poo",q:"Un método devuelve <code>this.lista</code> (un arreglo privado). ¿Qué problema hay?",o:["Rompe el encapsulamiento: quien lo recibe puede modificar el arreglo real","Ninguno, porque es private","No compila","Hace una copia profunda"],a:0,e:"Devolvé <code>[...this.lista]</code>."},
+{u:"poo",q:"En un diagrama UML, una flecha con triángulo vacío y línea continua indica…",o:["Herencia (extends)","Composición","Implementación de interfaz","Agregación"],a:0,e:"Línea punteada + triángulo = implements; rombo lleno = composición."},
+{u:"poo",q:"<code>readonly items: string[]</code>, ¿permite hacer <code>this.items.push(\"x\")</code>?",o:["Sí: readonly protege la referencia, no el contenido","No, nunca","Solo dentro del constructor","Solo si es static"],a:0,e:"Para proteger el contenido: <code>readonly string[]</code>."},
+// ===== PATRONES =====
+{u:"pat",q:"¿A qué categoría pertenece el Adapter?",o:["Estructural","Creacional","Comportamental","Arquitectónico"],a:0,e:"Conecta estructuras incompatibles."},
+{u:"pat",q:"¿A qué categoría pertenecen Singleton y Factory Method?",o:["Creacionales","Estructurales","Comportamentales","Uno creacional y otro estructural"],a:0,e:"Los dos se ocupan de cómo se crean objetos."},
+{u:"pat",q:"¿Por qué <code>obtenerInstancia()</code> es static?",o:["Porque se llama antes de que exista una instancia","Para que sea más rápido","Porque es privado","Porque devuelve void"],a:0,e:"Sin static necesitarías un objeto para pedir el objeto."},
+{u:"pat",q:"¿Cuál es una desventaja del Singleton?",o:["Dificulta las pruebas unitarias","Agrega una capa extra","Notificaciones en cascada difíciles de seguir","Obliga a crear muchas clases"],a:0,e:"Las otras son de Adapter, Observer y Factory."},
+{u:"pat",q:"¿Cuál es una desventaja del Observer?",o:["Notificaciones en cascada difíciles de seguir","Dificulta las pruebas unitarias","Agrega una capa extra","No permite agregar observadores"],a:0,e:"Truco: las otras opciones son desventajas de otros patrones."},
+{u:"pat",q:"¿Cuál es una desventaja del Adapter?",o:["Agrega una capa extra","Problemas en entornos concurrentes","Cascadas de notificaciones","Obliga a modificar la clase vieja"],a:0,e:"Una indirección más."},
+{u:"pat",q:"¿Cuál es una desventaja del Factory Method?",o:["Más clases y más complejidad","Dificulta las pruebas unitarias","Agrega estado global","Modifica la clase vieja"],a:0,e:"Para dos tipos simples puede ser exagerado."},
+{u:"pat",q:"¿Qué tipo de retorno debe tener <code>FabricaEnvios.crear(tipo)</code>?",o:["El tipo común: la interfaz Envio","EnvioExpress","any","void"],a:0,e:"Quien usa solo conoce el tipo común."},
+{u:"pat",q:"En el Observer, el sujeto conoce…",o:["Solo la interfaz Observador","Cada clase concreta de observador","Nada, usa EventEmitter","Al adaptee"],a:0,e:"Por eso se agregan observadores sin tocarlo."},
+{u:"pat",q:"En el Adapter, ¿qué pasa con la clase vieja (adaptee)?",o:["No se modifica: el adapter la contiene y traduce","Se reescribe entera","Se borra","Pasa a ser Singleton"],a:0,e:"Reutilizar sin modificar es la gracia del patrón."},
+{u:"pat",q:"<code>PedidoEnvio</code> hace <code>return subtotal + 1500;</code>. ¿Qué está mal?",o:["El valor tiene que leerse del Singleton, no escribirse a mano","Nada","Debería ser static","Debería usar enum"],a:0,e:"<code>ConfiguracionLocal.obtenerInstancia().costoEnvio</code>."},
+{u:"pat",q:"Una clase tiene una lista de <code>Suscriptor</code> y un método que la recorre llamando a <code>avisar()</code>. ¿Qué patrón es?",o:["Observer","Adapter","Factory","Singleton"],a:0,e:"Lista de una interfaz + notificar."},
+{u:"pat",q:"Una clase implementa <code>Suscriptor</code> y adentro guarda un <code>SistemaPushViejo</code>, traduciendo <code>avisar</code> a <code>mandarPush</code>. ¿Qué patrón es?",o:["Adapter","Observer","Factory","Singleton"],a:0,e:"Implementa la interfaz nueva y contiene la vieja."},
+{u:"pat",q:"¿Quiénes escribieron el libro de patrones de 1994?",o:["La Gang of Four: Gamma, Helm, Johnson y Vlissides","Robert C. Martin","Barbara Liskov","Martin Fowler"],a:0,e:"Martin popularizó SOLID; Liskov da nombre a la L."},
+// ===== SOLID =====
+{u:"solid",q:"¿Qué dice el principio de Responsabilidad Única?",o:["Una clase debe tener una sola razón para cambiar","Una clase debe tener un solo método","Una clase no puede heredar","Cada interfaz tiene un método"],a:0,e:"Responsabilidad = motivo de cambio."},
+{u:"solid",q:"Un método tiene un <code>if</code> que crece cada vez que se agrega un canal nuevo. ¿Qué principio viola?",o:["OCP","LSP","ISP","SRP"],a:0,e:"Solución: interfaz Canal + una clase por canal."},
+{u:"solid",q:"Una clase hace <code>new ArchivoLog()</code> dentro de su método. ¿Qué principio viola?",o:["DIP","OCP","LSP","ISP"],a:0,e:"Crea su propia dependencia concreta. Solución: recibir una interfaz por constructor."},
+{u:"solid",q:"<code>Square extends Rectangle</code> y <code>setWidth</code> también cambia el alto. ¿Qué principio viola?",o:["LSP","ISP","DIP","OCP"],a:0,e:"La subclase sorprende a quien esperaba un rectángulo."},
+{u:"solid",q:"<code>ImpresoraSimple</code> implementa <code>escanear()</code> con un <code>throw</code>. ¿Qué principio viola, principalmente?",o:["ISP","OCP","DIP","SRP"],a:0,e:"La interfaz es demasiado grande."},
+{u:"solid",q:"¿Qué significa refactorizar?",o:["Cambiar la estructura interna sin cambiar el comportamiento visible","Agregar funcionalidades nuevas","Cambiar la salida para que sea más clara","Reescribir en otro lenguaje"],a:0,e:"La salida antes y después es idéntica."},
+{u:"solid",q:"¿Cuál es la diferencia entre DIP y DI?",o:["DIP es el principio (depender de abstracciones); DI es la técnica (pasar dependencias desde afuera)","Son lo mismo","DI es una librería obligatoria","DIP es un patrón creacional"],a:0,e:"En la materia la DI se hace a mano por constructor."},
+{u:"solid",q:"¿Qué es el composition root?",o:["El único lugar donde se hacen los new y se conectan las piezas","La clase padre de todas","La interfaz principal","El archivo tsconfig.json"],a:0,e:"En el parcial, el bloque de prueba."},
+{u:"solid",q:"¿Qué principio puede violar un Singleton?",o:["SRP: controla cuántas instancias hay además de hacer su trabajo","ISP","LSP","Ninguno"],a:0,e:"También esconde dependencias (contra DIP)."},
+{u:"solid",q:"¿Qué buscamos en cohesión y acoplamiento?",o:["Alta cohesión y bajo acoplamiento","Baja cohesión y alto acoplamiento","Ambos altos","Ambos bajos"],a:0,e:"Clases enfocadas y poco dependientes entre sí."},
+{u:"solid",q:"¿Qué afirmación sobre OCP es correcta?",o:["Para agregar una opción no hay que modificar la clase existente","El código nunca se puede tocar, ni para corregir bugs","Prohíbe usar if","Solo aplica a interfaces"],a:0,e:"Cerrado a la modificación para extender."},
+{u:"solid",q:"\"Si compila, cumple LSP.\" ¿Es correcto?",o:["No: LSP es sobre comportamiento; el cuadrado compila y lo viola","Sí, siempre","Solo con strict","Solo si usa interfaces"],a:0,e:"El compilador no ve sorpresas de comportamiento."},
+// ===== EXAMEN =====
+{u:"exam",q:"¿Con cuántas respuestas correctas se aprueba la teoría?",o:["6 de 10","5 de 10","7 de 10","8 de 10"],a:0,e:"Y si no la aprobás, la práctica no se corrige."},
+{u:"exam",q:"¿Cuántos ejercicios prácticos hay que resolver bien?",o:["2 de 3","3 de 3","1 de 3","Depende del tema"],a:0,e:"Mejor dos completos que tres a medias."},
+{u:"exam",q:"¿Qué commit va antes de refactorizar el ejercicio 3?",o:["chore(ej3): código original","refactor(ej3): ejercicio 3 completo","feat(ej3): ejercicio 3","docs: entrega final"],a:0,e:"Es un punto de control obligatorio."},
+{u:"exam",q:"Tu salida dice \"Total historico\" y la esperada \"Total histórico\". ¿Está bien?",o:["No: la salida tiene que coincidir exactamente, con tildes","Sí, es lo mismo","Solo descuenta medio punto","Depende del profesor"],a:0,e:"Copiá los textos de la consigna."},
+{u:"exam",q:"¿Qué pasa si un ejercicio no tiene su commit de punto de control?",o:["Se considera no entregado","Se corrige igual","Se descuenta un punto","Se puede mandar por mail"],a:0,e:"Solo cuenta lo que está en main antes de la hora."},
+{u:"exam",q:"¿Cómo debe ser el repositorio?",o:["Privado, con los cuatro profesores como colaboradores","Público","Privado, sin colaboradores","Un fork del repo del profesor"],a:0,e:"Si es público o falta un profesor, no se corrige."}
+];
+
+/* ---------------- TABLAS ---------------- */
+const TABLES = [
+{u:"poo",h:"Modificadores de acceso",head:["Modificador","¿Quién lo ve?","Uso típico"],rows:[
+ ["public","Todos (es el valor por defecto)","Operaciones que ofrece el objeto"],
+ ["private","Solo la propia clase","Estado interno, listas internas"],
+ ["protected","La clase y sus subclases, no desde afuera","Datos que necesitan las hijas"],
+ ["readonly","Se lee siempre; se asigna una vez (al declarar o en el constructor)","Identificadores: numero, patente"],
+ ["static","Pertenece a la clase; compartido por todas las instancias","Contadores, constantes, fábricas, Singleton"]]},
+{u:"poo",h:"Clase abstracta vs interface",head:["Aspecto","Clase abstracta","Interface"],rows:[
+ ["¿Tiene código?","Sí, puede tener métodos implementados","No, solo firmas"],
+ ["¿Tiene estado?","Sí","No"],
+ ["¿Constructor?","Sí","No"],
+ ["¿Cuántas por clase?","Una (extends)","Varias (implements A, B)"],
+ ["¿Se instancia?","No","No"],
+ ["¿Existe al ejecutar?","Sí, es una clase de JS","No, se borra"],
+ ["¿Cuándo?","Hay código o datos comunes (\"es un\")","Solo garantizar capacidades (\"puede hacer\")"]]},
+{u:"poo",h:"Los cuatro pilares de la POO",head:["Pilar","Idea","Cómo se ve en el parcial"],rows:[
+ ["Abstracción","Modelar solo lo relevante","Clase abstracta Vehiculo / Habitacion con lo común"],
+ ["Encapsulamiento","Proteger el estado","Arreglo private, solo se agrega con ingresar / checkIn"],
+ ["Herencia","\"Es un\": reutilizar y extender","Auto y Moto extends Vehiculo"],
+ ["Polimorfismo","Mismo mensaje, distinto comportamiento","mostrarTarifas llama a calcularTarifa sin if por tipo"]]},
+{u:"poo",h:"Relaciones entre clases",head:["Relación","Pregunta","En código"],rows:[
+ ["Herencia","¿\"Es un\"?","class B extends A"],
+ ["Composición","¿\"Tiene un\" y no vive sin él?","Atributo creado y poseído por la clase (Auto tiene Motor)"],
+ ["Agregación","¿\"Tiene un\" pero vive por separado?","Atributo recibido de afuera"],
+ ["Asociación / uso","¿\"Usa un\"?","Parámetro de un método"]]},
+{u:"poo",h:"Override vs overload",head:["Aspecto","Override (sobrescritura)","Overload (sobrecarga)"],rows:[
+ ["Dónde","En la subclase","En la misma clase"],
+ ["Qué","Redefine un método heredado, misma firma","Varias firmas del mismo nombre"],
+ ["Ejemplo","Suite.calcularPrecio reemplaza al abstracto","crear(tipo: \"a\"): A; crear(tipo: \"b\"): B;"]]},
+{u:"pat",h:"Cuadro comparativo de patrones",head:["Patrón","Categoría","Qué resuelve","Ventaja","Desventaja","Señal en el código"],rows:[
+ ["Singleton","Creacional","Una única instancia con acceso global","Control de recursos compartidos","Dificulta pruebas; concurrencia","private constructor + private static instancia + static obtenerInstancia()"],
+ ["Factory Method","Creacional","Delegar la creación a una fábrica","Separa crear de usar; agregar tipos","Más clases y complejidad","static crear(tipo) con if que devuelve una interfaz"],
+ ["Observer","Comportamental","Avisar a varios cuando algo cambia","Bajo acoplamiento","Cascadas difíciles de seguir","Lista de una interfaz + suscribir / notificar"],
+ ["Adapter","Estructural","Que interfaces incompatibles trabajen juntas","Reutiliza lo viejo sin modificarlo","Agrega una capa extra","implements la interfaz nueva y contiene la clase vieja"]]},
+{u:"solid",h:"Tabla de señales SOLID",head:["Principio","Enunciado corto","Señal","Solución"],rows:[
+ ["SRP","Una sola razón para cambiar","Una clase valida, guarda y manda mails","Una clase por responsabilidad"],
+ ["OCP","Abierto a extensión, cerrado a modificación","if/switch que crece con cada opción","Interfaz común + una clase por opción"],
+ ["LSP","La subclase reemplaza a la base sin romper nada","La subclase cambia lo esperado o lanza errores nuevos","Sacar la herencia; contrato común"],
+ ["ISP","No depender de lo que no se usa","Métodos con throw porque no corresponden","Interfaces chicas"],
+ ["DIP","Depender de abstracciones","new de una clase concreta adentro de otra","Interfaz recibida por constructor"]]},
+{u:"solid",h:"SOLID y los patrones",head:["Patrón","Principios que ayuda a cumplir"],rows:[
+ ["Factory","SRP (crear vs usar), OCP (nuevo tipo aislado), DIP (cliente depende del tipo común)"],
+ ["Observer","OCP (observador nuevo sin tocar el sujeto), DIP (sujeto depende de la interfaz)"],
+ ["Adapter","SRP (traducción en un lugar), OCP (integra lo viejo sin modificarlo)"],
+ ["Singleton","Ojo: puede violar SRP y esconder dependencias (contra DIP)"]]},
+{u:"solid",h:"DIP, DI e IoC",head:["Término","Qué es"],rows:[
+ ["DIP (principio)","Depender de abstracciones, no de detalles"],
+ ["DI (técnica)","Pasarle a un objeto sus dependencias desde afuera, normalmente por constructor"],
+ ["IoC","El objeto no controla la creación de sus dependencias; las crea otro"],
+ ["Composition root","El único lugar donde se hacen los new y se conecta todo"]]},
+{u:"exam",h:"Los ejercicios de los parciales",head:["Examen","Ej. 1 · POO","Ej. 2 · Patrones","Ej. 3 · SOLID"],rows:[
+ ["Parcial Tema A","Estacionamiento (Vehiculo, Auto, Moto)","Local de comidas (Singleton + Factory)","Cobros (OCP + DIP)"],
+ ["Parcial Tema B","Hotel (Habitacion, Simple, Suite)","Paquetería (Singleton + Factory)","Notificaciones (OCP + DIP)"],
+ ["Simulacro Cine","Funciones 2D/3D/4D + Error","Estrenos (Observer + Adapter)","Entradas (SRP + OCP)"],
+ ["Simulacro Viajes","Paquetes con getter/setter + super","Cotización (Singleton + Factory)","Transportes (LSP + ISP)"]]},
+{u:"exam",h:"Commits de control",head:["#","Momento","Mensaje"],rows:[
+ ["0","Proyecto configurado y npx tsc corriendo","chore: configuración inicial"],
+ ["1","Ejercicio 1 terminado","feat(ej1): ejercicio 1 completo"],
+ ["2","Ejercicio 2 terminado","feat(ej2): ejercicio 2 completo"],
+ ["3","Original del ejercicio 3","chore(ej3): código original"],
+ ["4","Ejercicio 3 terminado","refactor(ej3): ejercicio 3 completo"],
+ ["5","ENTREGA.md final","docs: entrega final"]]}
+];
+
+/* ---------------- PRÁCTICA ---------------- */
+const SETS = {A:"Parcial Tema A", B:"Parcial Tema B", C:"Simulacro Cine", D:"Simulacro Viajes"};
+const EXERCISES = [
+{id:"A1",set:"A",u:"poo",title:"Estacionamiento",temas:"Clase abstracta, herencia, polimorfismo, readonly, private, static, getter.",
+ html:`<p>Un estacionamiento registra los vehículos que entran y calcula cuánto paga cada uno.</p>
+<ol><li>Clase abstracta <code>Vehiculo</code> con <code>patente: string</code> como <code>readonly</code> (se recibe en el constructor) y un método abstracto <code>calcularTarifa(horas: number): number</code>.</li>
+<li>Dos subclases: <code>Auto</code> ($1000 por hora) y <code>Moto</code> ($500 por hora).</li>
+<li>Clase <code>Estacionamiento</code> con: un arreglo <b>privado</b> de <code>Vehiculo</code>; <code>ingresar(vehiculo)</code> que lo agrega; un atributo <code>static</code> que cuente cuántos ingresaron en total; un getter <code>cantidad</code>; y <code>mostrarTarifas(horas)</code> que muestra cuánto paga cada uno <b>sin <code>if</code> por tipo</b>.</li></ol>
+<p>Prueba: un auto <code>AB123CD</code> y una moto <code>XY987ZW</code>, 2 horas.</p>`,
+ out:`AB123CD paga $2000
+XY987ZW paga $1000
+Vehículos estacionados: 2
+Total histórico de ingresos: 2`,
+ checks:["Vehiculo es abstract y calcularTarifa es abstract","patente es readonly y se asigna en el constructor (forma larga)","Auto y Moto no declaran constructor (usan el del padre)","El arreglo es private","El contador es static y se incrementa con Estacionamiento.x++","get cantidad devuelve el largo del arreglo","mostrarTarifas no tiene if ni instanceof","La salida coincide con tildes incluidas"],
+ hints:["El getter es <code>get cantidad(): number { return this.vehiculos.length; }</code>.","El total histórico se imprime en el bloque de prueba con <code>Estacionamiento.totalIngresos</code>, no con <code>this</code>."],
+ sol:"sol-a1"},
+{id:"A2",set:"A",u:"pat",title:"Pedidos de un local de comidas",temas:"Interfaces, Singleton, Factory Method.",
+ html:`<ol><li><b>Singleton</b> <code>ConfiguracionLocal</code>: constructor privado, método estático <code>obtenerInstancia()</code> y un atributo <code>readonly costoEnvio = 1500</code>.</li>
+<li>Interfaz <code>Pedido</code> con <code>calcularTotal(subtotal: number): number</code>.</li>
+<li><code>PedidoRetiro</code> devuelve el subtotal. <code>PedidoEnvio</code> devuelve el subtotal más el <code>costoEnvio</code> <b>leído del Singleton</b>.</li>
+<li><b>Factory</b> <code>FabricaPedidos</code> con <code>static crear(tipo: "retiro" | "envio"): Pedido</code>. Fuera de la fábrica nadie usa <code>new PedidoRetiro</code> ni <code>new PedidoEnvio</code>.</li></ol>
+<p>Prueba: subtotal de $4000 en los dos pedidos.</p>`,
+ out:`Mismo Singleton: true
+Retiro: $4000
+Envío: $5500`,
+ checks:["private static instancia: ConfiguracionLocal | undefined","private constructor() {}","static obtenerInstancia() crea solo la primera vez","costoEnvio es readonly","PedidoEnvio lee el valor con ConfiguracionLocal.obtenerInstancia().costoEnvio","crear recibe \"retiro\" | \"envio\" (sin enum) y devuelve Pedido","No hay new PedidoRetiro / new PedidoEnvio fuera de la fábrica","\"Mismo Singleton\" compara dos llamadas con ==="],
+ hints:["\"Mismo Singleton: true\" sale de comparar <code>obtenerInstancia() === obtenerInstancia()</code>.","Ojo con la tilde de \"Envío\"."],
+ sol:"sol-a2"},
+{id:"A3",set:"A",u:"solid",title:"Refactorizar un sistema de cobros",temas:"OCP e Inversión de Dependencia (DIP).",
+ html:`<p>Este código funciona, pero cada opción nueva obliga a agregar otro <code>if</code>, y la clase crea su propia dependencia concreta. Copialo, hacé el commit del punto de control 3 y refactorizalo:</p>`,
+ orig:"orig-a3",
+ html2:`<ol><li><b>OCP</b>: interfaz <code>MedioDePago</code> (con <code>nombre</code> y <code>calcularTotal(monto)</code>) y una clase por opción: <code>Efectivo</code> (el monto) y <code>Tarjeta</code> (monto + 5 %). <code>cobrar</code> recibe un <code>MedioDePago</code> y no tiene ningún <code>if</code>.</li>
+<li><b>DIP</b>: <code>SistemaCobros</code> recibe por constructor una interfaz <code>Repositorio</code>, con <code>RepositorioMySQL</code> (<code>[MySQL] ...</code>) y <code>RepositorioArchivo</code> (<code>[Archivo] ...</code>).</li>
+<li>Arriba de cada interfaz nueva, un comentario de una línea con el principio.</li></ol>`,
+ out:`[MySQL] Efectivo: $1000
+[MySQL] Tarjeta: $2100
+[Archivo] Efectivo: $500`,
+ checks:["Commit chore(ej3): código original antes de tocar nada","Interfaz MedioDePago con nombre y calcularTotal","Efectivo y Tarjeta implementan MedioDePago; los nombres van con mayúscula","cobrar(medio: MedioDePago, monto) no tiene ningún if","Interfaz Repositorio con guardar(dato)","SistemaCobros recibe el Repositorio por constructor y lo guarda en un private","Ningún new BaseDeDatosMySQL dentro de SistemaCobros","Comentario // OCP: y // DIP: arriba de cada interfaz","No envolviste guardar() en otro console.log"],
+ hints:["Fijate que la salida dice \"Efectivo\" y \"Tarjeta\" con mayúscula: sale de la propiedad <code>nombre</code> de cada clase.","Para la tercera línea creás un segundo <code>SistemaCobros</code> con <code>new RepositorioArchivo()</code>."],
+ sol:"sol-a3"},
+{id:"B1",set:"B",u:"poo",title:"Hotel",temas:"Clase abstracta, herencia, polimorfismo, readonly, private, static, getter.",
+ html:`<ol><li>Clase abstracta <code>Habitacion</code> con <code>numero: number</code> <code>readonly</code> (se recibe en el constructor) y un método abstracto <code>calcularPrecio(noches: number): number</code>.</li>
+<li>Subclases <code>Simple</code> ($20000 por noche) y <code>Suite</code> ($50000 por noche).</li>
+<li>Clase <code>Hotel</code> con arreglo <b>privado</b>, <code>checkIn(habitacion)</code>, un <code>static</code> que cuente los check-ins totales, un getter <code>cantidad</code> y <code>mostrarPrecios(noches)</code> sin <code>if</code> por tipo.</li></ol>
+<p>Prueba: una <code>Simple(101)</code> y una <code>Suite(303)</code>, 2 noches.</p>`,
+ out:`Habitación 101 paga $40000
+Habitación 303 paga $100000
+Habitaciones ocupadas: 2
+Total histórico de check-ins: 2`,
+ checks:["Habitacion abstract con calcularPrecio abstract","numero readonly asignado en el constructor","Hotel con arreglo private y static para el total","get cantidad","mostrarPrecios sin if por tipo","Los números de habitación son 101 y 303 (en la resolución del profe quedó 2: no copies ese detalle)","Las dos últimas líneas se imprimen en el bloque de prueba","\"Habitación\" e \"histórico\" con tilde"],
+ hints:["Es el mismo esqueleto que el Estacionamiento: si dominás uno, dominás el otro."],
+ sol:"sol-b1"},
+{id:"B2",set:"B",u:"pat",title:"Envíos de una empresa de paquetería",temas:"Interfaces, Singleton, Factory Method.",
+ html:`<ol><li><b>Singleton</b> <code>ConfiguracionEmpresa</code>: constructor privado, <code>static obtenerInstancia()</code> y <code>readonly recargoExpress = 2500</code>.</li>
+<li>Interfaz <code>Envio</code> con <code>calcularCosto(base: number): number</code>.</li>
+<li><code>EnvioEstandar</code> devuelve la base. <code>EnvioExpress</code> devuelve la base más el recargo <b>leído del Singleton</b>.</li>
+<li><b>Factory</b> <code>FabricaEnvios</code> con <code>static crear(tipo: "estandar" | "express"): Envio</code>. Nadie más usa <code>new</code> sobre los envíos.</li></ol>
+<p>Prueba: base de $3000 en los dos envíos.</p>`,
+ out:`Mismo Singleton: true
+Estándar: $3000
+Express: $5500`,
+ checks:["Las tres piezas del Singleton","recargoExpress readonly","EnvioExpress lee el recargo del Singleton","crear con unión de literales, devuelve Envio","Sin new de envíos fuera de la fábrica","\"Estándar\" con tilde"],
+ hints:["Este fue el que te quedó vacío. Escribilo de memoria con el cronómetro hasta hacerlo en menos de 15 minutos."],
+ sol:"sol-b2"},
+{id:"B3",set:"B",u:"solid",title:"Refactorizar un servicio de notificaciones",temas:"OCP e Inversión de Dependencia (DIP).",
+ html:`<p>Cada opción nueva agrega un <code>if</code> y la clase crea su propia dependencia. Copialo, commit del punto 3 y refactorizá:</p>`,
+ orig:"orig-b3",
+ html2:`<ol><li><b>OCP</b>: interfaz <code>Canal</code> (<code>nombre</code>, <code>calcularCosto()</code>) con <code>Email</code> ($0) y <code>SMS</code> ($15). <code>notificar</code> recibe un <code>Canal</code> y no tiene <code>if</code>.</li>
+<li><b>DIP</b>: el servicio recibe por constructor una interfaz <code>Registro</code>, con <code>RegistroArchivo</code> (<code>[LOG] ...</code>) y <code>RegistroBaseDeDatos</code> (<code>[DB] ...</code>).</li>
+<li>Comentario de una línea con el principio arriba de cada interfaz nueva.</li></ol>`,
+ out:`[LOG] Email: "Hola" ($0)
+[LOG] SMS: "Hola" ($15)
+[DB] Email: "Prueba" ($0)`,
+ checks:["Commit del original antes de refactorizar","Interfaz Canal + Email y SMS","notificar(canal: Canal, mensaje) sin if","Interfaz Registro + dos implementaciones","Registro recibido por constructor y guardado en un private","Comentarios // OCP: y // DIP:","Ningún console.log alrededor de registro.escribir()"],
+ hints:["El error de tu entrega fue <code>console.log(this.registro.escribir(...))</code>: imprimía <code>undefined</code>."],
+ sol:"sol-b3"},
+{id:"C1",set:"C",u:"poo",title:"Complejo de cines",temas:"Clase abstracta, herencia, polimorfismo, static, getter, Error.",
+ html:`<p>Clase abstracta <code>Funcion</code> con <code>sala</code> y <code>pelicula</code> <b>readonly</b>, y <code>precioEntrada()</code> <b>abstracto</b>. <code>Funcion2D</code> ($6000), <code>Funcion3D</code> ($8500 más $500 de anteojos, con el costo de anteojos como <b>constante de clase</b>) y <code>Funcion4D</code> ($12000).</p>
+<p><code>Complejo</code> con arreglo <b>privado</b>, <code>programar(funcion)</code>, <code>vender(sala, cantidad): number</code> (devuelve el importe; si no hay función en esa sala lanza <code>Error("No hay función en la sala &lt;n&gt;")</code>), un <code>static totalEntradas</code> con todas las entradas vendidas, un getter <code>cantidadFunciones</code> y <code>cartelera()</code> sin <code>if</code> por tipo.</p>
+<p>Prueba: programar <code>Funcion2D(1, "Relatos salvajes")</code>, <code>Funcion3D(2, "Avatar")</code>, <code>Funcion4D(3, "Dune")</code>; mostrar la cartelera; vender 3 en sala 2 y 2 en sala 3; intentar vender en la sala 9.</p>`,
+ out:`Sala 1 · Relatos salvajes: $6000
+Sala 2 · Avatar: $9000
+Sala 3 · Dune: $12000
+Venta sala 2: $27000
+Venta sala 3: $24000
+No hay función en la sala 9
+Funciones: 3
+Entradas vendidas: 5`,
+ checks:["static readonly ANTEOJOS en Funcion3D","vender usa find y lanza Error si da undefined","El error se captura con try/catch y e instanceof Error","totalEntradas suma cantidades, no ventas","cartelera sin if por tipo"],
+ hints:["<code>this.funciones.find((f) =&gt; f.sala === sala)</code> devuelve <code>Funcion | undefined</code>: comprobalo antes de usarlo."],
+ sol:"sol-c1"},
+{id:"C2",set:"C",u:"pat",title:"Aviso de estrenos",temas:"Observer + Adapter.",
+ html:`<p>Interfaz <code>Suscriptor</code> con <code>avisar(pelicula, fecha)</code>. <code>SuscriptorEmail(email)</code> imprime <code>Email a &lt;email&gt;: estreno de &lt;pelicula&gt; el &lt;fecha&gt;</code>.</p>
+<p>La empresa ya tiene un <code>SistemaPushViejo</code> que <b>no se modifica</b>:</p>`,
+ orig:"give-c2",
+ html2:`<p>Creá <code>PushAdapter(push, token)</code> para que funcione como un <code>Suscriptor</code>: título <code>"¡Estreno!"</code> y cuerpo <code>"&lt;pelicula&gt; (&lt;fecha&gt;)"</code>. <code>Cartelera</code> guarda suscriptores sin conocer sus clases, con <code>suscribir</code>, <code>desuscribir</code> y <code>anunciarEstreno(pelicula, fecha)</code>.</p>
+<p>Prueba: suscribir a <code>ana@mail.com</code> y un push con token <code>tok-77</code>; anunciar "Dune 3" el "12/03"; desuscribir a Ana; anunciar "Toy Story 5" el "19/06".</p>`,
+ out:`Email a ana@mail.com: estreno de Dune 3 el 12/03
+PUSH[tok-77] ¡Estreno! — Dune 3 (12/03)
+PUSH[tok-77] ¡Estreno! — Toy Story 5 (19/06)`,
+ checks:["Cartelera tiene una lista de Suscriptor (la interfaz)","desuscribir usa filter con !==","PushAdapter implements Suscriptor y guarda el SistemaPushViejo","SistemaPushViejo no se modificó","Ana se guarda en una variable para poder desuscribirla"],
+ hints:["Para desuscribir necesitás la <b>misma referencia</b>: <code>const ana = new SuscriptorEmail(...)</code>."],
+ sol:"sol-c2"},
+{id:"C3",set:"C",u:"solid",title:"Refactorizar la emisión de entradas",temas:"SRP y OCP.",
+ html:`<p>El código tiene un <code>switch (tipo)</code> que crece con cada tarifa <b>y además</b> imprime el ticket dentro del mismo método:</p>`,
+ orig:"orig-c3",
+ html2:`<ul><li>Interfaz <code>Descuento</code> (<code>nombre</code>, <code>aplicar(precio)</code>) con <code>SinDescuento</code> ("general"), <code>DescuentoEstudiante</code> (30 %) y <code>DescuentoJubilado</code> (50 %).</li>
+<li>Interfaz <code>Impresora</code> (<code>imprimir(lineas: string[])</code>) con <code>ImpresoraConsola</code>, que <code>ServicioEntradas</code> <b>recibe por constructor</b>.</li>
+<li>Comentario arriba de cada interfaz nueva con el principio. La salida no cambia.</li></ul>`,
+ out:`*** Dune ***
+Tarifa general: $10000
+*** Dune ***
+Tarifa estudiante: $7000
+*** Dune ***
+Tarifa jubilado: $5000
+Recaudado: $22000`,
+ checks:["Sin switch en ServicioEntradas","Descuento + tres clases","Impresora recibida por constructor","Comentarios // OCP: y // SRP:","Salida idéntica a la original"],
+ hints:["SRP: calcular la tarifa y mostrar el ticket son dos motivos de cambio distintos."],
+ sol:"sol-c3"},
+{id:"D1",set:"D",u:"poo",title:"Paquetes turísticos",temas:"Clase abstracta, getter/setter con validación, static, polimorfismo, super.",
+ html:`<p>Clase abstracta <code>Paquete</code> con <code>destino</code> <b>readonly</b> y <code>noches</code> con <b>getter y setter</b>: entero entre 1 y 30 (si no, <code>Error("Las noches deben estar entre 1 y 30")</code>), validado también al crear. <code>precioPorNoche()</code> abstracto y <code>precioTotal()</code> = precio por noche × noches.</p>
+<ul><li><code>PaqueteNacional</code>: $40000 por noche.</li>
+<li><code>PaqueteInternacional</code>: $90000 por noche <b>más</b> una tasa fija de $60000 (constante de clase). Reutilizá el cálculo del padre con <code>super</code>.</li></ul>
+<p><code>Agencia</code> con ventas privadas, <code>vender(paquete)</code>, <code>static paquetesVendidos</code>, getter <code>totalVendido</code> y <code>resumen()</code> sin <code>if</code> por tipo.</p>
+<p>Prueba: vender <code>PaqueteNacional("Bariloche", 5)</code> y <code>PaqueteInternacional("Madrid", 7)</code>; cambiar Bariloche a 6 noches; resumen; intentar poner 45 noches; total y cantidad.</p>`,
+ out:`Bariloche (6 noches): $240000
+Madrid (7 noches): $690000
+Las noches deben estar entre 1 y 30
+Total vendido: $930000
+Paquetes vendidos: 2`,
+ checks:["Atributo de respaldo _noches distinto del setter","El constructor asigna con el setter para validar","override precioTotal() con super.precioTotal()","static readonly para la tasa","totalVendido es un getter calculado (reduce)"],
+ hints:["En el constructor: primero <code>this._noches = 0</code> (para strict) y después <code>this.noches = noches</code>."],
+ sol:"sol-d1"},
+{id:"D2",set:"D",u:"pat",title:"Servicios con cotización",temas:"Singleton + Factory.",
+ html:`<p>Singleton <code>CotizacionDolar</code> con <code>valor = 1000</code> <b>readonly</b>. Interfaz <code>Servicio</code> (<code>descripcion()</code>, <code>precioEnPesos()</code>).</p>
+<ul><li><code>Excursion(nombre, pesos)</code>: descripción <code>"Excursión &lt;nombre&gt;"</code>.</li>
+<li><code>VueloInternacional(ruta, dolares)</code>: descripción <code>"Vuelo &lt;ruta&gt;"</code>; convierte a pesos <b>leyendo la cotización del Singleton</b>.</li>
+<li><code>FabricaServicios.crear(tipo, nombre, monto)</code> estático, con <code>tipo: "excursion" | "vuelo"</code>.</li></ul>
+<p>Prueba: excursión "Cerro Catedral" de 85000 y vuelo "EZE-MAD" de 950 dólares.</p>`,
+ out:`Mismo Singleton: true
+Excursión Cerro Catedral: $85000
+Vuelo EZE-MAD: $950000
+Total: $1035000`,
+ checks:["Singleton con sus tres piezas","El vuelo multiplica por CotizacionDolar.obtenerInstancia().valor","La fábrica recibe parámetros extra y los pasa al constructor","Recorrés un Servicio[] sumando el total"],
+ hints:["La fábrica puede recibir más parámetros que el tipo: <code>crear(tipo, nombre, monto)</code>."],
+ sol:"sol-d2"},
+{id:"D3",set:"D",u:"solid",title:"Refactorizar transportes",temas:"LSP e ISP.",
+ html:`<p><code>Transporte</code> obliga a todas las subclases a tener <code>despacharEquipaje</code> y <code>servirComida</code>. <code>Colectivo</code> y <code>Traslado</code> los rompen lanzando errores:</p>`,
+ orig:"orig-d3",
+ html2:`<p>Refactorizá con interfaces chicas <code>Reservable</code> (<code>nombre</code>, <code>reservarAsiento</code>), <code>ConEquipaje</code> y <code>ConServicioABordo</code>, <b>sin herencia</b> entre transportes. <code>reservarTodos</code> y <code>servirATodos</code> piden solo la capacidad que usan. Las dos líneas <code>ERROR: ...</code> desaparecen porque esas llamadas pasan a <b>no compilar</b>: dejalas comentadas con la explicación.</p>`,
+ out:`Avión: asiento para Ana
+Colectivo: asiento para Ana
+Traslado: lugar para Ana
+Avión: 23 kg despachados
+Colectivo: 15 kg en bodega
+Avión: menú servido`,
+ checks:["Tres interfaces chicas con su comentario de principio","Ninguna clase de transporte hereda de otra","Ningún throw en los transportes","servirATodos recibe ConServicioABordo[]","Las llamadas imposibles quedaron comentadas"],
+ hints:["¿LSP o ISP? Los dos: la herencia promete algo que la hija no cumple (LSP) y la clase base funciona como interfaz gorda (ISP)."],
+ sol:"sol-d3"}
+];
+
+/* ---------------- STATE ---------------- */
+const store = {
+  get(k,d){try{const v=localStorage.getItem("tlp4p1:"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("tlp4p1:"+k,JSON.stringify(v))}catch(e){}}
+};
+const S = {unit:store.get("unit","all"), tab:store.get("tab","resumen"), set:store.get("set","all")};
+let known = new Set(store.get("known",[]));
+const cardId = c => c[0]+":"+c[1];
+const shuffle = a => {a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const inUnit = u => S.unit==="all" || S.unit===u;
+const $ = (s,el=document) => el.querySelector(s);
+const view = $("#view");
+const badge = u => `<span class="ubadge" style="--c:${UNITS[u].c}">${UNITS[u].name}</span>`;
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* resaltado mínimo de TypeScript */
+const KW = /^(abstract|break|case|catch|class|const|constructor|else|export|extends|for|function|get|if|implements|import|interface|let|new|of|override|private|protected|public|readonly|return|set|static|super|switch|this|throw|try|type|void|number|string|boolean|unknown|undefined|true|false|null)$/;
+function highlight(src, lang){
+  if(lang==="sh") return esc(src);
+  const re=/(\/\/[^\n]*)|(`(?:\\.|[^`\\])*`|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|([A-Za-z_]\w*)|(\d+(?:\.\d+)?)/g;
+  let out="",last=0,m;
+  while((m=re.exec(src))){
+    out+=esc(src.slice(last,m.index));
+    if(m[1])out+=`<span class="tk-c">${esc(m[1])}</span>`;
+    else if(m[2])out+=`<span class="tk-s">${esc(m[2])}</span>`;
+    else if(m[3])out+=KW.test(m[3])?`<span class="tk-k">${m[3]}</span>`:m[3];
+    else out+=`<span class="tk-n">${m[4]}</span>`;
+    last=re.lastIndex;
+  }
+  return out+esc(src.slice(last));
+}
+const rawCode = id => {const el=document.getElementById("c-"+id);return el?el.textContent.replace(/^\n/,"").replace(/\s+$/,""):""};
+function fillCode(root){
+  root.querySelectorAll("pre[data-code]").forEach(p=>{
+    const id=p.dataset.code, el=document.getElementById("c-"+id);
+    p.innerHTML=highlight(rawCode(id), el&&el.dataset.lang);
+  });
+}
+const codeBlock = id => `<div class="code-wrap"><pre class="code" data-code="${id}"></pre><button class="btn sm copy" data-copy="${id}">Copiar</button></div>`;
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-copy]");if(!b)return;
+  const t=rawCode(b.dataset.copy);
+  const done=()=>{b.textContent="Copiado";setTimeout(()=>b.textContent="Copiar",1200)};
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,()=>{});
+});
+
+/* header */
+function renderUnits(){
+  const opts=[["all","Todas","var(--fg)"],...Object.entries(UNITS).map(([k,v])=>[k,v.name,v.c])];
+  $("#units").innerHTML=opts.map(([k,n,c])=>`<button class="chip" style="--c:${c}" data-unit="${k}" aria-pressed="${S.unit===k}"><span class="dot"></span>${n}</button>`).join("");
+}
+$("#units").addEventListener("click",e=>{const b=e.target.closest("[data-unit]");if(!b)return;S.unit=b.dataset.unit;store.set("unit",S.unit);fc=null;qz=null;renderUnits();render()});
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;store.set("tab",S.tab);render()});
+
+function render(){
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.tab===S.tab));
+  ({resumen:renderSummary,cards:renderCards,quiz:renderQuiz,tablas:renderTables,practica:renderPractice})[S.tab]();
+  fillCode(view);
+}
+
+/* resumen */
+function renderSummary(){
+  const units=Object.keys(UNITS).filter(inUnit);
+  view.innerHTML=`<div class="notice"><span class="eyebrow">Aviso del profe · recuperatorio</span>
+    <p>La práctica es similar a la de los parciales: <b>3 ejercicios</b>.</p>
+    <ol><li><b>POO</b></li><li><b>Patrones de diseño</b></li><li><b>Principios S.O.L.I.D.</b></li></ol>
+    <p class="stats">Teoría: 10 preguntas, se aprueba con 6 · Práctica: 2 de 3 ejercicios</p></div>
+  <div class="sum-tools"><input id="q" type="search" placeholder="Buscar en la teoría (ej.: static, adapter, liskov)" aria-label="Buscar en la teoría"><button class="btn" id="openAll">Abrir todo</button><button class="btn" id="closeAll">Cerrar todo</button></div><p class="stats" id="qinfo" hidden></p>`+
+  units.map(u=>`<section class="unit-block" style="--c:${UNITS[u].c}">
+    <div class="unit-head">${badge(u)}<h2>${UNITS[u].full}</h2><p>${UNITS[u].desc}</p></div>
+    <nav class="toc" aria-label="Índice de ${UNITS[u].name}">${SUMMARY[u].map((s,i)=>`<a href="#" data-go="${u}-${i}">${s.h}</a>`).join("")}</nav>
+    ${SUMMARY[u].map((s,i)=>`<details class="sec" id="sec-${u}-${i}" open><summary>${s.h}</summary><div class="sec-body prose">${s.html}</div></details>`).join("")}
+  </section>`).join("");
+  $("#openAll").onclick=()=>view.querySelectorAll("details").forEach(d=>d.open=true);
+  $("#closeAll").onclick=()=>view.querySelectorAll("details").forEach(d=>d.open=false);
+  view.querySelectorAll("[data-go]").forEach(a=>a.onclick=e=>{e.preventDefault();const d=$("#sec-"+a.dataset.go);d.open=true;d.scrollIntoView({behavior:"smooth",block:"start"})});
+  const norm=t=>t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  $("#q").oninput=e=>{const q=norm(e.target.value.trim());let n=0;
+    view.querySelectorAll("details.sec").forEach(d=>{const hit=!q||norm(d.textContent).includes(q);d.hidden=!hit;if(hit){n++;if(q)d.open=true}});
+    view.querySelectorAll(".unit-block").forEach(b=>b.hidden=q&&!b.querySelector("details.sec:not([hidden])"));
+    view.querySelectorAll(".toc").forEach(t=>t.hidden=!!q);
+    const i=$("#qinfo");i.hidden=!q;i.textContent=n?`${n} secciones mencionan «${e.target.value.trim()}»`:`Ninguna sección menciona «${e.target.value.trim()}». Probá con otra palabra.`};
+}
+
+/* flashcards */
+let fc=null;
+function buildDeck(onlyPending){
+  let d=CARDS.filter(c=>inUnit(c[0]));
+  if(onlyPending)d=d.filter(c=>!known.has(cardId(c)));
+  return {deck:shuffle(d),i:0,flipped:false,pending:onlyPending};
+}
+function renderCards(){
+  if(!fc)fc=buildDeck(store.get("pendingOnly",false));
+  const all=CARDS.filter(c=>inUnit(c[0]));
+  const k=all.filter(c=>known.has(cardId(c))).length;
+  const pct=all.length?Math.round(k/all.length*100):0;
+  let body;
+  if(!fc.deck.length || fc.i>=fc.deck.length){
+    body=`<div class="empty"><h2>${fc.deck.length?"Terminaste la ronda":"No quedan tarjetas pendientes"}</h2>
+      <p class="stats">${k} de ${all.length} marcadas como sabidas</p>
+      <div class="row"><button class="btn primary" id="again">Barajar de nuevo</button>${k?`<button class="btn" id="pend">Solo las que me faltan</button>`:""}<button class="btn" id="reset">Reiniciar progreso</button></div></div>`;
+  } else {
+    const c=fc.deck[fc.i], isK=known.has(cardId(c));
+    body=`<div class="card ${fc.flipped?"flipped":""}" id="card" tabindex="0" role="button" aria-label="Dar vuelta la tarjeta">
+      <div class="card-in">
+        <div class="face front"><div class="top-line">${badge(c[0])}<span class="hint">${fc.i+1} / ${fc.deck.length}</span></div><div class="q">${c[1]}</div><div class="top-line"><span class="hint">Tocá para ver la respuesta</span>${isK?'<span class="known-mark">✓ sabida</span>':""}</div></div>
+        <div class="face back"><div class="top-line">${badge(c[0])}<span class="hint">Respuesta</span></div><div class="a">${c[2]}</div><div class="hint">${c[1]}</div></div>
+      </div></div>
+      <div class="fc-actions">
+        <button class="btn nav" id="prev" aria-label="Anterior">←</button>
+        <button class="btn bad" id="no">Repasar</button>
+        <button class="btn ok" id="yes">La sabía</button>
+        <button class="btn nav" id="next" aria-label="Siguiente">→</button>
+      </div>
+      <p class="kbd">Espacio: girar · ← →: navegar · 1: repasar · 2: la sabía</p>`;
+  }
+  view.innerHTML=`<div class="fc-bar"><div class="row"><span class="eyebrow">Progreso</span><span class="stats">${k}/${all.length} · ${pct}%</span></div><div class="progress"><i style="width:${pct}%"></i></div>
+    <div class="row"><button class="chip" id="toggleP" aria-pressed="${fc.pending}">Solo pendientes</button><button class="chip" id="shuf">Barajar</button></div></div>`+body;
+  const card=$("#card");
+  if(card){card.onclick=flip;$("#prev").onclick=()=>move(-1);$("#next").onclick=()=>move(1);$("#yes").onclick=()=>mark(true);$("#no").onclick=()=>mark(false)}
+  $("#toggleP").onclick=()=>{const p=!fc.pending;store.set("pendingOnly",p);fc=buildDeck(p);renderCards()};
+  $("#shuf").onclick=()=>{fc=buildDeck(fc.pending);renderCards()};
+  const ag=$("#again");if(ag)ag.onclick=()=>{fc=buildDeck(fc.pending);renderCards()};
+  const pe=$("#pend");if(pe)pe.onclick=()=>{store.set("pendingOnly",true);fc=buildDeck(true);renderCards()};
+  const rs=$("#reset");if(rs)rs.onclick=()=>{all.forEach(c=>known.delete(cardId(c)));store.set("known",[...known]);fc=buildDeck(false);store.set("pendingOnly",false);renderCards()};
+}
+function flip(){fc.flipped=!fc.flipped;const c=$("#card");if(c)c.classList.toggle("flipped",fc.flipped)}
+function move(d){fc.i=Math.max(0,Math.min(fc.deck.length,fc.i+d));fc.flipped=false;renderCards()}
+function mark(ok){const id=cardId(fc.deck[fc.i]);ok?known.add(id):known.delete(id);store.set("known",[...known]);move(1)}
+document.addEventListener("keydown",e=>{
+  if(S.tab!=="cards"||!fc||!$("#card")||e.target.closest("input,textarea"))return;
+  if(e.key===" "){e.preventDefault();flip()} else if(e.key==="ArrowRight")move(1); else if(e.key==="ArrowLeft")move(-1);
+  else if(e.key==="1")mark(false); else if(e.key==="2")mark(true);
+});
+
+/* quiz */
+let qz=null;
+const srcBadge = q => q.src?`<span class="srcbadge">Salió en el parcial · Tema ${q.src}</span>`:"";
+function startQuiz(mode,n){
+  const base=QUIZ.filter(q=>inUnit(q.u));
+  let pool;
+  if(mode==="real") pool=shuffle(base.filter(q=>q.src));
+  else if(mode==="sim"){ // simulacro: 10 preguntas mezclando unidades, como la teoría real
+    const by=u=>shuffle(base.filter(q=>q.u===u));
+    pool=S.unit==="all"?shuffle([...by("poo").slice(0,4),...by("pat").slice(0,3),...by("solid").slice(0,3)]):shuffle(base).slice(0,10);
+  } else pool=shuffle(base).slice(0,n);
+  qz={mode,qs:pool.map(q=>{const idx=shuffle(q.o.map((_,i)=>i));return {...q,o:idx.map(i=>q.o[i]),a:idx.indexOf(q.a)}}),i:0,picked:null,score:0,miss:[]};
+  renderQuiz();fillCode(view);
+}
+function renderQuiz(){
+  const pool=QUIZ.filter(q=>inUnit(q.u)), real=pool.filter(q=>q.src);
+  const hk="hist:"+S.unit, hist=store.get(hk,[]);
+  if(!qz){
+    const label=S.unit==="all"?"todas las unidades":UNITS[S.unit].full;
+    view.innerHTML=`<div class="qz-card qz-setup"><span class="eyebrow">Quiz de opción múltiple</span><h2>Ponete a prueba con ${label}</h2>
+      <p>Hay ${pool.length} preguntas en el banco (${real.length} son de las teorías reales). Las opciones se mezclan en cada ronda y cada respuesta trae su explicación.</p>
+      <h3>Simulacro de la teoría</h3>
+      <div class="row"><button class="btn primary" data-mode="sim">Simulacro: 10 preguntas · aprobás con 6</button>${real.length?`<button class="btn" data-mode="real">Preguntas reales de los parciales (${real.length})</button>`:""}</div>
+      <h3>Práctica libre</h3>
+      <div class="row">${[10,25].filter(n=>n<pool.length).map(n=>`<button class="btn" data-n="${n}">${n} preguntas</button>`).join("")}<button class="btn" data-n="${pool.length}">Todas (${pool.length})</button></div>
+      ${hist.length?`<p class="hist">Últimos resultados: ${hist.slice(-5).map(h=>`${h.s}/${h.t}`).join(" · ")}</p>`:""}</div>`;
+    view.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>startQuiz("free",+b.dataset.n));
+    view.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>startQuiz(b.dataset.mode));
+    return;
+  }
+  if(qz.i>=qz.qs.length){
+    const t=qz.qs.length,s=qz.score,p=t?Math.round(s/t*100):0, pass=p>=60;
+    if(!qz.saved){hist.push({s,t});store.set(hk,hist.slice(-20));qz.saved=true}
+    view.innerHTML=`<div class="qz-card"><span class="eyebrow">Resultado</span>
+      <div class="row" style="gap:16px;align-items:baseline"><span class="score-big" style="color:${pass?"var(--ok)":"var(--bad)"}">${s}/${t}</span><span class="stats">${p}% · ${pass?"Aprobado (6 de 10 o más)":"No alcanza: hacen falta 6 de 10"}</span></div>
+      ${qz.miss.length?`<div><b>Para repasar</b><div class="miss">${qz.miss.map(q=>`<div>${badge(q.u)} ${srcBadge(q)}<b>${q.q}</b>Correcta: ${q.o[q.a]}<br><span class="stats">${q.e}</span></div>`).join("")}</div></div>`:"<p>Ningún error. Muy bien.</p>"}
+      <div class="row"><button class="btn primary" id="retry">Otra ronda</button><button class="btn" id="back">Cambiar modo</button></div></div>`;
+    $("#retry").onclick=()=>startQuiz(qz.mode,t);$("#back").onclick=()=>{qz=null;renderQuiz()};
+    return;
+  }
+  const q=qz.qs[qz.i],L="ABCD";
+  view.innerHTML=`<div class="qz-card" style="--c:${UNITS[q.u].c}">
+    <div class="qz-foot"><div class="row">${badge(q.u)} ${srcBadge(q)}</div><span class="stats">Pregunta ${qz.i+1} de ${qz.qs.length} · ${qz.score} correctas</span></div>
+    <div class="qz-q">${q.q}</div>
+    <div class="opts">${q.o.map((o,i)=>{let cl="";if(qz.picked!=null){if(i===q.a)cl="right";else if(i===qz.picked)cl="wrong"}
+      return `<button class="opt ${cl}" data-i="${i}" ${qz.picked!=null?"disabled":""}><span class="k">${L[i]}</span><span>${o}</span></button>`}).join("")}</div>
+    ${qz.picked!=null?`<div class="expl"><b>${qz.picked===q.a?"Correcto.":"Incorrecto."}</b> ${q.e}</div>
+    <div class="qz-foot"><button class="btn" id="quit">Terminar</button><button class="btn primary" id="nextQ">${qz.i+1<qz.qs.length?"Siguiente":"Ver resultado"} →</button></div>`:""}
+  </div>`;
+  view.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(qz.picked!=null)return;qz.picked=+b.dataset.i;if(qz.picked===q.a)qz.score++;else qz.miss.push(q);renderQuiz();const n=$("#nextQ");if(n)n.focus()});
+  const n=$("#nextQ");if(n)n.onclick=()=>{qz.i++;qz.picked=null;renderQuiz()};
+  const qu=$("#quit");if(qu)qu.onclick=()=>{qz.qs=qz.qs.slice(0,qz.i+1);qz.i=qz.qs.length;renderQuiz()};
+}
+document.addEventListener("keydown",e=>{
+  if(S.tab!=="quiz"||!qz||qz.i>=qz.qs.length)return;
+  const m={a:0,b:1,c:2,d:3,"1":0,"2":1,"3":2,"4":3}[e.key.toLowerCase()];
+  if(m!=null&&qz.picked==null){const b=view.querySelectorAll(".opt")[m];if(b)b.click()}
+  else if(e.key==="Enter"&&qz.picked!=null&&document.activeElement?.id!=="nextQ"){const n=$("#nextQ");if(n)n.click()}
+});
+
+/* tablas */
+function renderTables(){
+  view.innerHTML=TABLES.filter(t=>inUnit(t.u)).map(t=>`<section class="tbl-block">${badge(t.u)}<h3>${t.h}</h3><div class="tbl-scroll"><table>
+    <thead><tr>${t.head.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+    <tbody>${t.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0?"<b>"+esc(c)+"</b>":esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+  </table></div></section>`).join("");
+}
+
+/* práctica */
+let timerId=null;
+const EXAM_MS=90*60*1000;
+function fmt(ms){const neg=ms<0;ms=Math.abs(ms);const m=Math.floor(ms/60000),s=Math.floor(ms%60000/1000);return (neg?"-":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+function tick(){
+  const el=$("#timer");if(!el){clearInterval(timerId);timerId=null;return}
+  const start=store.get("timerStart",null);
+  if(start==null){el.textContent="90:00";el.classList.remove("late");return}
+  const left=EXAM_MS-(Date.now()-start);
+  el.textContent=fmt(left);el.classList.toggle("late",left<10*60*1000);
+}
+function renderPractice(){
+  const sets=Object.keys(SETS);
+  const list=EXERCISES.filter(x=>inUnit(x.u)&&(S.set==="all"||S.set===x.set));
+  const done=store.get("done",{}), checks=store.get("checks",{});
+  const total=EXERCISES.filter(x=>inUnit(x.u)).length, nDone=EXERCISES.filter(x=>inUnit(x.u)&&done[x.id]).length;
+  const running=store.get("timerStart",null)!=null;
+  view.innerHTML=`<div class="pr-bar">
+    <div class="timer-box"><div><span class="eyebrow">Cronómetro de examen</span><div class="timer" id="timer">90:00</div></div>
+      <div class="row"><button class="btn ${running?"":"primary"}" id="tStart">${running?"Reiniciar":"Empezar 1:30 h"}</button>${running?`<button class="btn" id="tStop">Detener</button>`:""}</div></div>
+    <div class="row" role="group" aria-label="Examen"><button class="chip" data-set="all" aria-pressed="${S.set==="all"}">Todos</button>${sets.map(k=>`<button class="chip" data-set="${k}" aria-pressed="${S.set===k}">${SETS[k]}</button>`).join("")}</div>
+    <div class="row"><span class="eyebrow">Resueltos solo</span><span class="stats">${nDone}/${total}</span><div class="progress"><i style="width:${total?Math.round(nDone/total*100):0}%"></i></div></div>
+  </div>`+
+  (list.length?list.map(x=>{const ck=checks[x.id]||[];return `<article class="ex-card" style="--c:${UNITS[x.u].c}" id="ex-${x.id}">
+    <div class="ex-head"><div class="row">${badge(x.u)}<span class="srcbadge">${SETS[x.set]} · Ej. ${x.id[1]}</span></div>${done[x.id]?'<span class="done-mark">✓ resuelto solo</span>':""}</div>
+    <h3>${x.title}</h3><p class="temas">${x.temas}</p>
+    <div class="prose">${x.html}</div>
+    ${x.orig?codeBlock(x.orig):""}
+    ${x.html2?`<div class="prose">${x.html2}</div>`:""}
+    <div><span class="eyebrow">Salida esperada</span><pre class="out">${esc(x.out)}</pre></div>
+    <details class="reveal"><summary>Checklist de corrección</summary><div><ul class="checks">${x.checks.map((c,i)=>`<li><label><input type="checkbox" data-ck="${x.id}" data-i="${i}" ${ck.includes(i)?"checked":""}><span>${esc(c)}</span></label></li>`).join("")}</ul></div></details>
+    ${x.hints.length?`<details class="reveal"><summary>Pistas</summary><div class="prose"><ul>${x.hints.map(h=>`<li>${h}</li>`).join("")}</ul></div></details>`:""}
+    <details class="reveal"><summary>Solución</summary><div>${codeBlock(x.sol)}</div></details>
+    <div class="ex-foot"><span class="stats">Probalo en tu PC: <code>npx tsc</code> y <code>node src/ejercicio${x.id[1]}.ts</code></span><button class="btn ${done[x.id]?"ok":""}" data-done="${x.id}">${done[x.id]?"✓ Lo resolví solo":"Marcar como resuelto solo"}</button></div>
+  </article>`}).join(""):`<div class="empty"><p>No hay ejercicios para ese filtro.</p></div>`);
+  view.querySelectorAll("[data-set]").forEach(b=>b.onclick=()=>{S.set=b.dataset.set;store.set("set",S.set);render()});
+  view.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>{const d=store.get("done",{});d[b.dataset.done]=!d[b.dataset.done];store.set("done",d);render()});
+  view.querySelectorAll("[data-ck]").forEach(c=>c.onchange=()=>{const all=store.get("checks",{}),id=c.dataset.ck,i=+c.dataset.i;const s=new Set(all[id]||[]);c.checked?s.add(i):s.delete(i);all[id]=[...s];store.set("checks",all)});
+  $("#tStart").onclick=()=>{store.set("timerStart",Date.now());render()};
+  const ts=$("#tStop");if(ts)ts.onclick=()=>{store.set("timerStart",null);render()};
+  tick();if(!timerId)timerId=setInterval(tick,1000);
+}
+
+renderUnits();render();
+</script>
+</body>
+</html>
